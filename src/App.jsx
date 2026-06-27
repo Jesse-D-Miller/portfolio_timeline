@@ -6,7 +6,7 @@ function App() {
     <main className={styles.app}>
       <header className={styles.header}>
         <h1>Jesse Miller</h1>
-        <p>Career, projects, and milestones — in order.</p>
+        <p>Career, education, projects, and achievements — across time.</p>
       </header>
       <Timeline />
     </main>

@@ -1,0 +1,32 @@
+.marker {
+  position: absolute;
+  top: 50%;
+  border: none;
+  cursor: pointer;
+  background-color: var(--marker-color, var(--color-accent));
+  padding: 0;
+}
+
+.point {
+  width: var(--marker-size);
+  height: var(--marker-size);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.range {
+  height: var(--marker-size);
+  border-radius: calc(var(--marker-size) / 2);
+  transform: translateY(-50%);
+}
+
+.marker:hover,
+.marker:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.marker[aria-expanded='true'] {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}

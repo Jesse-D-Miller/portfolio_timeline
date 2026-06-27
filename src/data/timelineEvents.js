@@ -1,3 +1,4 @@
+import { AXIS_START_YEAR, getAxisEndYear } from '../utils/timelineScale';
 import internshipImg from '../assets/images/internship.svg';
 import graduationImg from '../assets/images/graduation.svg';
 import cliToolImg from '../assets/images/cli-tool.svg';
@@ -9,22 +10,25 @@ import portfolioTimelineImg from '../assets/images/portfolio-timeline.svg';
  * @property {string} date - ISO "YYYY-MM-DD" or "YYYY-MM"
  * @property {string} title
  * @property {string} description
- * @property {'career'|'project'|'personal'} category
+ * @property {'career'|'education'|'project'|'achievement'} category
  * @property {string} [image] - imported asset; omit for a text-only card
  * @property {string} [imageAlt] - required if image is present
  * @property {string} [link] - external URL ("read more")
- * @property {string} [endDate] - ISO date, for ranged events (e.g. a job)
+ * @property {string} [endDate] - ISO date, for ranged events (e.g. a job or degree)
  */
 
 /** @type {TimelineEvent[]} */
 const timelineEvents = [
   {
-    id: 'started-cs-degree',
+    id: 'cs-degree',
     date: '2016-09',
-    title: 'Started Computer Science Degree',
+    endDate: '2020-05',
+    title: 'Computer Science Degree',
     description:
-      'Began undergraduate studies in Computer Science, focusing on software fundamentals and systems design.',
-    category: 'career',
+      'Undergraduate studies in Computer Science, focusing on software fundamentals and systems design.',
+    category: 'education',
+    image: graduationImg,
+    imageAlt: 'Illustration representing a university degree',
   },
   {
     id: 'first-internship',
@@ -37,16 +41,6 @@ const timelineEvents = [
     imageAlt: 'Illustration representing a software engineering internship',
   },
   {
-    id: 'graduated-university',
-    date: '2020-05',
-    title: 'Graduated University',
-    description:
-      'Earned my Computer Science degree after four years of coursework, projects, and internships.',
-    category: 'personal',
-    image: graduationImg,
-    imageAlt: 'Illustration representing a university graduation',
-  },
-  {
     id: 'launched-cli-tool',
     date: '2021-03',
     title: 'Launched Open-Source CLI Tool',
@@ -56,6 +50,14 @@ const timelineEvents = [
     image: cliToolImg,
     imageAlt: 'Illustration representing an open-source command line tool',
     link: 'https://github.com/Jesse-D-Miller',
+  },
+  {
+    id: 'cli-tool-1k-stars',
+    date: '2023-02',
+    title: 'Open-Source CLI Tool Hits 1,000 GitHub Stars',
+    description:
+      'The CLI tool crossed 1,000 stars and 40 contributors, becoming a community-maintained project.',
+    category: 'achievement',
   },
   {
     id: 'first-fulltime-role',
@@ -71,7 +73,7 @@ const timelineEvents = [
     date: '2026-06',
     title: 'Built This Portfolio Timeline',
     description:
-      'Designed and built a data-driven, horizontally-scrolling timeline to showcase my career, projects, and milestones.',
+      'Designed and built a data-driven timeline with parallel career, education, project, and achievement lanes.',
     category: 'project',
     image: portfolioTimelineImg,
     imageAlt: 'Illustration representing this portfolio timeline project',
@@ -80,10 +82,12 @@ const timelineEvents = [
 ];
 
 const REQUIRED_FIELDS = ['id', 'date', 'title', 'description', 'category'];
-const VALID_CATEGORIES = ['career', 'project', 'personal'];
+const VALID_CATEGORIES = ['career', 'education', 'project', 'achievement'];
 
 function validateTimelineEvents(events) {
   const seenIds = new Set();
+  const axisStart = AXIS_START_YEAR;
+  const axisEnd = getAxisEndYear();
 
   for (const event of events) {
     const missing = REQUIRED_FIELDS.filter((field) => !event[field]);
@@ -103,6 +107,29 @@ function validateTimelineEvents(events) {
       console.warn(
         `[timelineEvents] Event "${event.id}" has an unparseable date "${event.date}".`,
       );
+    }
+
+    if (event.endDate) {
+      if (Number.isNaN(new Date(event.endDate).getTime())) {
+        console.warn(
+          `[timelineEvents] Event "${event.id}" has an unparseable endDate "${event.endDate}".`,
+        );
+      } else if (new Date(event.endDate) < new Date(event.date)) {
+        console.warn(
+          `[timelineEvents] Event "${event.id}" has an endDate before its date.`,
+        );
+      }
+    }
+
+    for (const field of ['date', 'endDate']) {
+      const value = event[field];
+      if (!value) continue;
+      const year = new Date(value).getUTCFullYear();
+      if (year < axisStart || year > axisEnd) {
+        console.warn(
+          `[timelineEvents] Event "${event.id}" has a ${field} (${value}) outside the timeline axis range ${axisStart}–${axisEnd}.`,
+        );
+      }
     }
 
     if (event.image && !event.imageAlt) {

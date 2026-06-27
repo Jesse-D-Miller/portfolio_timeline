@@ -1,16 +1,28 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { getSortedTimelineEvents } from '../../data/timelineEvents';
+import { CATEGORY_ORDER } from '../../utils/categories';
+import { PIXELS_PER_YEAR } from '../../utils/timelineScale';
 import { useHorizontalScroll } from '../../hooks/useHorizontalScroll';
-import { useScrollSnapIndex } from '../../hooks/useScrollSnapIndex';
+import { useTimelineNavigation } from '../../hooks/useTimelineNavigation';
+import { useInitialScrollPosition } from '../../hooks/useInitialScrollPosition';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import TimelineSpine from '../TimelineSpine/TimelineSpine';
-import TimelineEventCard from '../TimelineEventCard/TimelineEventCard';
+import TimelineLanes from '../TimelineLanes/TimelineLanes';
 import TimelineControls from '../TimelineControls/TimelineControls';
+import EventPopover from '../EventPopover/EventPopover';
 import styles from './Timeline.module.css';
 
 export default function Timeline() {
   const events = useMemo(() => getSortedTimelineEvents(), []);
+  const eventsByCategory = useMemo(() => {
+    const grouped = Object.fromEntries(CATEGORY_ORDER.map((c) => [c, []]));
+    for (const event of events) {
+      grouped[event.category]?.push(event);
+    }
+    return grouped;
+  }, [events]);
+
   const containerRef = useRef(null);
+  const markerRefs = useRef(new Map());
 
   const isNarrowViewport = useMediaQuery('(max-width: 720px)');
   const prefersReducedMotion = useMediaQuery(
@@ -18,54 +30,78 @@ export default function Timeline() {
   );
   const scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
 
-  useHorizontalScroll(containerRef, { enabled: !isNarrowViewport });
-  const { activeIndex, atStart, atEnd } = useScrollSnapIndex(
+  const [activeEventId, setActiveEventId] = useState(null);
+  const [activeAnchorEl, setActiveAnchorEl] = useState(null);
+  const [lastJump, setLastJump] = useState(null);
+
+  useHorizontalScroll(containerRef, { enabled: true });
+  useInitialScrollPosition(containerRef, PIXELS_PER_YEAR);
+  const { atStart, atEnd, jumpToAdjacentEvent } = useTimelineNavigation(
     containerRef,
-    events.length,
+    events,
+    PIXELS_PER_YEAR,
+    scrollBehavior,
   );
 
-  function scrollByOneCard(direction) {
-    const container = containerRef.current;
-    const firstCard = container?.children[0];
-    if (!container || !firstCard) return;
-
-    const gap = parseFloat(getComputedStyle(container).columnGap) || 0;
-    const step = firstCard.getBoundingClientRect().width + gap;
-    container.scrollBy({ left: direction * step, behavior: scrollBehavior });
+  function registerMarkerRef(eventId, node) {
+    if (node) markerRefs.current.set(eventId, node);
+    else markerRefs.current.delete(eventId);
   }
 
-  function handleCardFocus(event) {
-    event.currentTarget.scrollIntoView({
-      behavior: scrollBehavior,
-      inline: 'start',
-      block: 'nearest',
-    });
+  function handleMarkerActivate(id, node) {
+    const next = activeEventId === id ? null : id;
+    setActiveEventId(next);
+    setActiveAnchorEl(next ? node : null);
   }
+
+  function handleJump(direction) {
+    const target = jumpToAdjacentEvent(direction);
+    if (!target) return;
+    setLastJump({ index: events.indexOf(target), title: target.title });
+    // preventScroll: we already scrolled the track to the right position
+    // above — without this, native focus-driven scroll-into-view fights
+    // that, especially in the boundary-snap fallback where the focused
+    // marker isn't at the position we just scrolled to.
+    markerRefs.current.get(target.id)?.focus({ preventScroll: true });
+  }
+
+  const statusText = lastJump
+    ? `Event ${lastJump.index + 1} of ${events.length}: ${lastJump.title}`
+    : `${events.length} events — use the arrows, scroll, or drag to explore`;
+
+  const activeEvent =
+    events.find((event) => event.id === activeEventId) ?? null;
 
   return (
     <section
       className={styles.wrapper}
-      aria-label="Career, project, and milestone timeline"
+      aria-label="Career, education, project, and achievement timeline"
     >
-      <TimelineSpine />
-      <ul className={styles.track} ref={containerRef}>
-        {events.map((event, index) => (
-          <TimelineEventCard
-            key={event.id}
-            event={event}
-            isActive={index === activeIndex}
-            onFocus={handleCardFocus}
-          />
-        ))}
-      </ul>
+      <TimelineLanes
+        containerRef={containerRef}
+        events={events}
+        eventsByCategory={eventsByCategory}
+        pixelsPerYear={PIXELS_PER_YEAR}
+        isNarrowViewport={isNarrowViewport}
+        activeEventId={activeEventId}
+        onMarkerActivate={handleMarkerActivate}
+        registerMarkerRef={registerMarkerRef}
+      />
       <TimelineControls
-        activeIndex={activeIndex}
-        itemCount={events.length}
-        activeTitle={events[activeIndex]?.title}
+        statusText={statusText}
         disablePrev={atStart}
         disableNext={atEnd}
-        onPrev={() => scrollByOneCard(-1)}
-        onNext={() => scrollByOneCard(1)}
+        onPrev={() => handleJump(-1)}
+        onNext={() => handleJump(1)}
+      />
+      <EventPopover
+        event={activeEvent}
+        anchorEl={activeAnchorEl}
+        containerRef={containerRef}
+        onClose={() => {
+          setActiveEventId(null);
+          setActiveAnchorEl(null);
+        }}
       />
     </section>
   );

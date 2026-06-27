@@ -8,8 +8,9 @@
   --color-accent: #5b8cff;
 
   --color-career: #5b8cff;
+  --color-education: #c084fc;
   --color-project: #4fd1a5;
-  --color-personal: #f5a623;
+  --color-achievement: #f5a623;
 
   /* spacing scale */
   --space-1: 0.25rem;
@@ -29,4 +30,8 @@
 
   /* layout */
   --timeline-card-width: 320px;
+  --lane-height: 4.5rem;
+  --lane-gap: var(--space-4);
+  --marker-size: 0.875rem;
+  --axis-height: 2.5rem;
 }

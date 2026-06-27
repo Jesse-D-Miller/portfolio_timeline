@@ -1,9 +1,7 @@
 import styles from './TimelineControls.module.css';
 
 export default function TimelineControls({
-  activeIndex,
-  itemCount,
-  activeTitle,
+  statusText,
   disablePrev,
   disableNext,
   onPrev,
@@ -21,8 +19,7 @@ export default function TimelineControls({
         ‹
       </button>
       <span className={styles.status} aria-live="polite">
-        Event {itemCount === 0 ? 0 : activeIndex + 1} of {itemCount}
-        {activeTitle ? `: ${activeTitle}` : ''}
+        {statusText}
       </span>
       <button
         type="button"

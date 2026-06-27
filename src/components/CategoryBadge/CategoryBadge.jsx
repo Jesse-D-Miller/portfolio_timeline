@@ -1,16 +1,5 @@
+import { CATEGORY_LABELS, CATEGORY_COLOR_VARS } from '../../utils/categories';
 import styles from './CategoryBadge.module.css';
-
-const CATEGORY_LABELS = {
-  career: 'Career',
-  project: 'Project',
-  personal: 'Personal',
-};
-
-const CATEGORY_COLOR_VARS = {
-  career: 'var(--color-career)',
-  project: 'var(--color-project)',
-  personal: 'var(--color-personal)',
-};
 
 export default function CategoryBadge({ category }) {
   return (

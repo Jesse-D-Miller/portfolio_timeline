@@ -2,18 +2,12 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  flex: 0 0 var(--timeline-card-width);
-  scroll-snap-align: start;
+  width: var(--timeline-card-width);
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
   padding: var(--space-4);
-  outline-offset: 2px;
-}
-
-.card[aria-current='true'] {
-  border-color: var(--color-accent);
 }
 
 .imageWrapper {
@@ -66,7 +60,6 @@
 
 @media (max-width: 720px) {
   .card {
-    flex: 1 1 auto;
-    scroll-snap-align: none;
+    width: min(var(--timeline-card-width), calc(100vw - var(--space-6)));
   }
 }
