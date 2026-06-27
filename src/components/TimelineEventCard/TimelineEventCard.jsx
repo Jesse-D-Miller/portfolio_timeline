@@ -1,0 +1,50 @@
+import CategoryBadge from '../CategoryBadge/CategoryBadge';
+import { formatDate } from '../../utils/formatDate';
+import styles from './TimelineEventCard.module.css';
+
+export default function TimelineEventCard({ event, isActive, onFocus }) {
+  const dateLabel = event.endDate
+    ? `${formatDate(event.date)} – ${formatDate(event.endDate)}`
+    : formatDate(event.date);
+
+  return (
+    <li
+      className={styles.card}
+      role="article"
+      tabIndex={0}
+      aria-current={isActive ? 'true' : undefined}
+      aria-label={`${event.title}, ${dateLabel}`}
+      data-event-id={event.id}
+      onFocus={onFocus}
+    >
+      {event.image && (
+        <div className={styles.imageWrapper}>
+          <img
+            className={styles.image}
+            src={event.image}
+            alt={event.imageAlt ?? ''}
+            loading="lazy"
+            decoding="async"
+            draggable={false}
+          />
+        </div>
+      )}
+      <div className={styles.meta}>
+        <span className={styles.date}>{dateLabel}</span>
+        <CategoryBadge category={event.category} />
+      </div>
+      <h3 className={styles.title}>{event.title}</h3>
+      <p className={styles.description}>{event.description}</p>
+      {event.link && (
+        <a
+          className={styles.link}
+          href={event.link}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Read more
+        </a>
+      )}
+    </li>
+  );
+}

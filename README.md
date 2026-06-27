@@ -1,16 +1,39 @@
-# React + Vite
+# Portfolio Timeline
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A data-driven, horizontally-scrolling timeline portfolio built with React, plain CSS, and Vite.
 
-Currently, two official plugins are available:
+## Adding a timeline event
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Edit `src/data/timelineEvents.js` and add a new object to the array — anywhere in the array, in any order. Events are sorted by `date` automatically before rendering, so you never need to keep the list in chronological order by hand.
 
-## React Compiler
+```js
+{
+  id: 'unique-slug',
+  date: '2025-03',                 // "YYYY-MM-DD" or "YYYY-MM"
+  title: 'Title',
+  description: 'Short description.',
+  category: 'career',              // 'career' | 'project' | 'personal'
+  image: someImportedImage,        // optional
+  imageAlt: 'Description',         // required if image is set
+  link: 'https://example.com',     // optional
+  endDate: '2026-01',              // optional, for ranged events
+}
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+In dev mode, malformed entries (missing fields, bad dates, invalid category, missing `imageAlt`) log a console warning instead of crashing the page.
 
-## Expanding the ESLint configuration
+## Development
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+npm run dev          # start the dev server
+npm run lint         # eslint
+npm run format       # prettier --write
+npm run format:check # prettier --check
+npm run build         # production build to dist/
+npm run preview       # preview the production build
+```
+
+## Deployment
+
+Static Vite output (`dist/`) deploys to Vercel or Netlify with no extra configuration — Vercel auto-detects the Vite framework preset, and `netlify.toml` pins the build command/publish directory for Netlify.

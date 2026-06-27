@@ -1,0 +1,72 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 0 0 var(--timeline-card-width);
+  scroll-snap-align: start;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+  outline-offset: 2px;
+}
+
+.card[aria-current='true'] {
+  border-color: var(--color-accent);
+}
+
+.imageWrapper {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  margin: calc(var(--space-4) * -1) calc(var(--space-4) * -1) 0;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.date {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.description {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
+
+.link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+.link:hover,
+.link:focus-visible {
+  text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  .card {
+    flex: 1 1 auto;
+    scroll-snap-align: none;
+  }
+}

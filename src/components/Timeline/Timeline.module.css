@@ -1,0 +1,35 @@
+.wrapper {
+  position: relative;
+  padding: var(--space-6) var(--space-5);
+}
+
+.track {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: var(--space-5);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: var(--space-2) var(--space-2) var(--space-4);
+  list-style: none;
+  cursor: grab;
+}
+
+.track[data-dragging='true'] {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.track:focus-within {
+  scroll-behavior: smooth;
+}
+
+@media (max-width: 720px) {
+  .track {
+    flex-direction: column;
+    overflow-x: visible;
+    scroll-snap-type: none;
+    cursor: auto;
+    padding-left: var(--space-5);
+  }
+}

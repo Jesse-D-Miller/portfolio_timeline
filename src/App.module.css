@@ -1,0 +1,15 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  padding: var(--space-6) var(--space-5) 0;
+  text-align: center;
+}
+
+.header p {
+  color: var(--color-text-muted);
+  margin-top: var(--space-2);
+}

@@ -1,0 +1,44 @@
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.button:not(:disabled):hover,
+.button:not(:disabled):focus-visible {
+  border-color: var(--color-accent);
+}
+
+.status {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  min-width: 8rem;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .controls {
+    display: none;
+  }
+}
