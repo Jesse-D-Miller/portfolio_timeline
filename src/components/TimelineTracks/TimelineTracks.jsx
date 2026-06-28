@@ -4,6 +4,7 @@ import {
   TRACK_BASELINE_FRACTION,
   buildTrackPathD,
 } from '../../utils/trackCurve';
+import { buildTrackDeviations } from '../../utils/trackDeviations';
 import { getAxisTotalWidth, dateToPixels } from '../../utils/timelineScale';
 import { CATEGORY_COLOR_VARS } from '../../utils/categories';
 import TimelineMarker from '../TimelineMarker/TimelineMarker';
@@ -46,6 +47,45 @@ export default function TimelineTracks({
     [groupHeight],
   );
 
+  // Career/Education must be built first — an achievement/project that
+  // dips toward one of them needs to know exactly where that trunk's line
+  // currently sits (it may itself be elevated by an overlapping job or
+  // degree), not just its resting baseline.
+  const deviations = useMemo(() => {
+    if (groupHeight === 0) return {};
+    const trunkDeviations = {
+      career: buildTrackDeviations(
+        'career',
+        eventsByTrack.career ?? [],
+        baselines,
+        pixelsPerYear,
+      ),
+      education: buildTrackDeviations(
+        'education',
+        eventsByTrack.education ?? [],
+        baselines,
+        pixelsPerYear,
+      ),
+    };
+    return {
+      ...trunkDeviations,
+      achievement: buildTrackDeviations(
+        'achievement',
+        eventsByTrack.achievement ?? [],
+        baselines,
+        pixelsPerYear,
+        trunkDeviations,
+      ),
+      project: buildTrackDeviations(
+        'project',
+        eventsByTrack.project ?? [],
+        baselines,
+        pixelsPerYear,
+        trunkDeviations,
+      ),
+    };
+  }, [eventsByTrack, baselines, pixelsPerYear, groupHeight]);
+
   return (
     <div
       ref={containerRef}
@@ -69,10 +109,10 @@ export default function TimelineTracks({
                   data-track={trackId}
                   data-reduced-motion={prefersReducedMotion}
                   d={buildTrackPathD(
-                    trackId,
                     0,
                     totalWidth,
                     baselines[trackId],
+                    deviations[trackId],
                   )}
                 />
               ))}
@@ -83,21 +123,28 @@ export default function TimelineTracks({
                   .map((event) => {
                     const startX = dateToPixels(event.date, pixelsPerYear);
                     const endX = dateToPixels(event.endDate, pixelsPerYear);
+                    const d = buildTrackPathD(
+                      startX,
+                      endX,
+                      baselines[trackId],
+                      deviations[trackId],
+                    );
+                    const segmentStyle = {
+                      '--segment-color': CATEGORY_COLOR_VARS[event.category],
+                    };
                     return (
-                      <path
-                        key={event.id}
-                        className={styles.rangeSegment}
-                        style={{
-                          '--segment-color':
-                            CATEGORY_COLOR_VARS[event.category],
-                        }}
-                        d={buildTrackPathD(
-                          trackId,
-                          startX,
-                          endX,
-                          baselines[trackId],
-                        )}
-                      />
+                      <g key={event.id}>
+                        <path
+                          className={styles.rangeSegmentOutline}
+                          style={segmentStyle}
+                          d={d}
+                        />
+                        <path
+                          className={styles.rangeSegment}
+                          style={segmentStyle}
+                          d={d}
+                        />
+                      </g>
                     );
                   }),
               )}
@@ -109,8 +156,8 @@ export default function TimelineTracks({
                   key={event.id}
                   event={event}
                   pixelsPerYear={pixelsPerYear}
-                  trackId={trackId}
                   baselinePx={baselines[trackId]}
+                  deviations={deviations[trackId]}
                   labelPosition={index % 2 === 0 ? 'above' : 'below'}
                   isOpen={activeEventId === event.id}
                   onActivate={onMarkerActivate}

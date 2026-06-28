@@ -4,14 +4,22 @@
 
 .markerWrapper:not([data-ranged='true']) {
   transform: translate(-50%, -50%);
+  /* Point markers must stay clickable above ranged hit-areas — a ranged
+     event's invisible hit-area is sized to cover its full deviation
+     amplitude (now duration-scaled and potentially tall), and can overlap
+     a point marker sitting at the same y when the marker is touching that
+     same trunk's currently-elevated line. */
+  z-index: 2;
 }
 
 .markerWrapper[data-ranged='true'] {
   transform: translateY(-50%);
+  z-index: 1;
 }
 
 .marker {
   display: block;
+  box-sizing: border-box;
   border: none;
   cursor: pointer;
   background-color: var(--marker-color, var(--color-accent));
@@ -19,9 +27,18 @@
 }
 
 .point {
-  width: var(--marker-size);
-  height: var(--marker-size);
+  width: var(--marker-outer-size);
+  height: var(--marker-outer-size);
   border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    white 0%,
+    var(--marker-color, var(--color-accent)) 50%,
+    color-mix(in srgb, var(--marker-color, var(--color-accent)) 60%, black) 100%
+  );
+  border: 2px solid
+    color-mix(in srgb, var(--marker-color, var(--color-accent)) 50%, black);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
 .range {
@@ -46,11 +63,25 @@
   outline-offset: 2px;
 }
 
+.connector {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  transform: translate(-30px, -30px);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.connector path {
+  fill: none;
+  stroke: white;
+  stroke-width: 1.5px;
+}
+
 .label {
   position: absolute;
-  left: 50%;
-  top: calc(100% + 4px);
-  transform: translateX(-50%);
   max-width: 9rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -60,7 +91,26 @@
   pointer-events: none;
 }
 
-.markerWrapper[data-label-position='above'] .label {
+/* Ranged event labels: positioned via inline style (computed in
+   TimelineMarker.jsx from the bar's actual midpoint position, since the
+   wrapper's own box is deliberately oversized for the invisible hit area
+   and doesn't track where the visible bar is) — contained directly inside
+   the colored bar, white text with a shadow for contrast against
+   whichever category color the bar happens to be. */
+.containedLabel {
+  color: var(--color-text);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* Point event labels: offset to start exactly where the leader line's
+   straight segment ends (see CONNECTOR_* constants in TimelineMarker.jsx
+   — this offset must stay in sync with that geometry). */
+.markerWrapper:not([data-ranged='true']) .label {
+  left: calc(50% + 8px);
+  top: calc(100% + 18px);
+}
+
+.markerWrapper:not([data-ranged='true'])[data-label-position='above'] .label {
   top: auto;
-  bottom: calc(100% + 4px);
+  bottom: calc(100% + 18px);
 }

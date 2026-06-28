@@ -17,11 +17,7 @@ export default function Timeline() {
   const eventsByTrack = useMemo(() => {
     const grouped = Object.fromEntries(TRACK_IDS.map((t) => [t, []]));
     for (const event of events) {
-      if (event.category === 'career' || event.category === 'education') {
-        grouped[event.category].push(event);
-      } else {
-        grouped[event.trackAffiliation ?? 'independent'].push(event);
-      }
+      grouped[event.category].push(event);
     }
     return grouped;
   }, [events]);
@@ -79,7 +75,7 @@ export default function Timeline() {
   return (
     <section
       className={styles.wrapper}
-      aria-label="Career, education, and independent project timeline"
+      aria-label="Career, achievement, project, and education timeline"
     >
       <TimelineLegend />
       <TimelineTracks

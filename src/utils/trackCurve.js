@@ -1,117 +1,97 @@
-export const TRACK_IDS = ['career', 'education', 'independent'];
+export const TRACK_IDS = ['career', 'achievement', 'project', 'education'];
 
-// Baseline as a fraction of the track-group's measured height. Independent
-// sits between the two trunks, per the subway-map layout requirement.
+// Baseline as a fraction of the track-group's measured height, top-to-
+// bottom visual order: Career, Achievement, Project, Education. Gaps are
+// deliberately slightly uneven (0.13/0.14/0.13) rather than perfectly
+// even — even spacing would put a dip from Achievement toward Education
+// land exactly on Project's own baseline, a confusing coincidence rather
+// than an intentional crossing.
 export const TRACK_BASELINE_FRACTION = {
-  career: 0.25,
-  independent: 0.5,
-  education: 0.75,
+  career: 0.3,
+  achievement: 0.43,
+  project: 0.57,
+  education: 0.7,
 };
-
-// Octolinear pattern (subway-map style): every track is built from only
-// horizontal runs, 45-degree diagonals, and vertical jogs — no curves.
-// Each cycle holds flat at the baseline, jogs diagonally up (or down, on
-// alternating cycles) by AMPLITUDE_PX, holds flat there, then drops/rises
-// straight back to baseline (a true vertical segment) before the next
-// cycle begins.
-const FLAT_LEN_PX = 200;
-export const TRACK_AMPLITUDE_PX = 24; // also the diagonal run's length, since 45deg means dx=dy
-const CYCLE_LEN_PX = FLAT_LEN_PX * 2 + TRACK_AMPLITUDE_PX;
-
-// Per-track phase offset (px) so the three tracks' jogs don't all happen at
-// the same x position.
-const TRACK_PHASE_PX = {
-  career: 0,
-  independent: CYCLE_LEN_PX / 3,
-  education: (CYCLE_LEN_PX * 2) / 3,
-};
-
-function mod(n, m) {
-  return ((n % m) + m) % m;
-}
-
-function cycleDirection(cycleIndex) {
-  return mod(cycleIndex, 2) === 0 ? 1 : -1;
-}
 
 /**
- * Resolves a track's absolute y (px, relative to the track-group's own
- * height) at a given x. Pure function — no DOM/layout dependency; the
- * caller resolves baselinePx once from a measured container height and
- * passes it in, so the path and every marker share the exact same value.
- * Single source of truth shared by the rendered SVG path and marker
- * positioning, so a marker can never visually drift off its trunk's line.
- * @param {string} trackId
- * @param {number} x - pixel offset along the date axis
+ * @typedef {Object} Deviation
+ * @property {number} footprintStart - x where the line leaves baseline
+ * @property {number} peakStart - x where it reaches peakOffsetPx
+ * @property {number} peakEnd - x where it starts returning to baseline
+ * @property {number} footprintEnd - x where it's back at baseline
+ * @property {number} peakOffsetPx - signed y offset from baseline at the peak/plateau
+ */
+
+/**
+ * Resolves a track's y at x, given that track's own pre-resolved deviation
+ * list (built by buildTrackDeviations). Pure function — no DOM/layout
+ * access. Single source of truth shared by the rendered SVG path and
+ * marker positioning, so a marker can never visually drift off its line.
+ * @param {number} x
  * @param {number} baselinePx
+ * @param {Deviation[]} deviations - sorted by footprintStart, non-overlapping
  * @returns {number}
  */
-export function getTrackY(trackId, x, baselinePx) {
-  const phase = TRACK_PHASE_PX[trackId] ?? 0;
-  const shiftedX = x + phase;
-  const cycleIndex = Math.floor(shiftedX / CYCLE_LEN_PX);
-  const localX = shiftedX - cycleIndex * CYCLE_LEN_PX;
-  const direction = cycleDirection(cycleIndex);
+export function getTrackY(x, baselinePx, deviations) {
+  for (const d of deviations) {
+    if (x <= d.footprintStart || x >= d.footprintEnd) continue;
 
-  if (localX < FLAT_LEN_PX) return baselinePx;
-  const afterFlat = localX - FLAT_LEN_PX;
-  if (afterFlat < TRACK_AMPLITUDE_PX) {
-    return baselinePx + direction * afterFlat; // 45-degree diagonal
+    if (x >= d.peakStart && x <= d.peakEnd) {
+      return baselinePx + d.peakOffsetPx;
+    }
+    if (x < d.peakStart) {
+      const span = d.peakStart - d.footprintStart;
+      const t = span > 0 ? (x - d.footprintStart) / span : 1;
+      return baselinePx + d.peakOffsetPx * t;
+    }
+    const span = d.footprintEnd - d.peakEnd;
+    const t = span > 0 ? (d.footprintEnd - x) / span : 1;
+    return baselinePx + d.peakOffsetPx * t;
   }
-  return baselinePx + direction * TRACK_AMPLITUDE_PX; // flat at the jog's peak/trough
+  return baselinePx;
 }
 
 /**
  * Builds an SVG path `d` string tracing a track's exact octolinear shape
- * between rangeStart and rangeEnd, using exact cycle-vertex coordinates
- * (not sampling) so every segment is a precise horizontal, vertical, or
- * 45-degree line — matching getTrackY exactly, so the line and markers can
- * never disagree. Used both for the full background track line
- * ([0, totalWidth]) and for a ranged event's bar ([startX, endX]), so a
- * bar spanning a jog visually follows it instead of cutting straight
- * through.
- * @param {string} trackId
+ * between rangeStart and rangeEnd, using exact deviation-vertex
+ * coordinates (not sampling) so every segment is a precise horizontal,
+ * vertical, or 45-degree line — matching getTrackY exactly, so the line
+ * and markers can never disagree. Used both for the full background track
+ * line ([0, totalWidth]) and for a ranged event's bar ([startX, endX]).
+ *
+ * rangeStart/rangeEnd's y is always computed via getTrackY, never by
+ * clamping a nearby vertex's x while keeping its own y — that produces
+ * the wrong y when the boundary falls mid-ramp, which previously caused
+ * ranged-event bars to visually deviate from the track at their exact
+ * start/end.
  * @param {number} rangeStart
  * @param {number} rangeEnd
  * @param {number} baselinePx
+ * @param {Deviation[]} deviations
  * @returns {string}
  */
-export function buildTrackPathD(trackId, rangeStart, rangeEnd, baselinePx) {
-  const phase = TRACK_PHASE_PX[trackId] ?? 0;
-  // Only collect vertices strictly inside the range — the exact start/end
-  // points are computed separately via getTrackY below, since a clamped
-  // vertex's own y can be wrong (it belongs to whatever x it was meant
-  // for, not necessarily the boundary it gets clamped to). This is what
-  // previously caused a ranged bar's start/end to visually deviate from
-  // the track's true path at those exact dates.
+export function buildTrackPathD(rangeStart, rangeEnd, baselinePx, deviations) {
   const interiorPoints = [];
 
-  let cycleIndex = Math.floor((rangeStart + phase) / CYCLE_LEN_PX) - 1;
-  for (;;) {
-    const origin = cycleIndex * CYCLE_LEN_PX - phase;
-    if (origin > rangeEnd) break;
-
-    const direction = cycleDirection(cycleIndex);
-    const peakY = baselinePx + direction * TRACK_AMPLITUDE_PX;
-    const cycleVertices = [
-      [origin, baselinePx],
-      [origin + FLAT_LEN_PX, baselinePx],
-      [origin + FLAT_LEN_PX + TRACK_AMPLITUDE_PX, peakY],
-      [origin + FLAT_LEN_PX + TRACK_AMPLITUDE_PX + FLAT_LEN_PX, peakY],
+  for (const d of deviations) {
+    const peakY = baselinePx + d.peakOffsetPx;
+    const vertices = [
+      [d.footprintStart, baselinePx],
+      [d.peakStart, peakY],
+      [d.peakEnd, peakY],
+      [d.footprintEnd, baselinePx],
     ];
-    for (const vertex of cycleVertices) {
+    for (const vertex of vertices) {
       if (vertex[0] > rangeStart && vertex[0] < rangeEnd) {
         interiorPoints.push(vertex);
       }
     }
-
-    cycleIndex += 1;
   }
 
   const points = [
-    [rangeStart, getTrackY(trackId, rangeStart, baselinePx)],
+    [rangeStart, getTrackY(rangeStart, baselinePx, deviations)],
     ...interiorPoints,
-    [rangeEnd, getTrackY(trackId, rangeEnd, baselinePx)],
+    [rangeEnd, getTrackY(rangeEnd, baselinePx, deviations)],
   ];
 
   const deduped = points.filter(

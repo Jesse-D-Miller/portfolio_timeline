@@ -58,9 +58,14 @@
   opacity: 0.6;
 }
 
-.trackPath[data-track='independent'] {
-  stroke: var(--color-text-muted);
-  opacity: 0.35;
+.trackPath[data-track='achievement'] {
+  stroke: var(--color-achievement);
+  opacity: 0.6;
+}
+
+.trackPath[data-track='project'] {
+  stroke: var(--color-project);
+  opacity: 0.6;
 }
 
 @keyframes flow-dash {
@@ -73,6 +78,18 @@
   fill: none;
   stroke: var(--segment-color, var(--color-accent));
   stroke-width: var(--marker-size);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rangeSegmentOutline {
+  fill: none;
+  stroke: color-mix(
+    in srgb,
+    var(--segment-color, var(--color-accent)) 65%,
+    black
+  );
+  stroke-width: var(--marker-outer-size);
   stroke-linecap: round;
   stroke-linejoin: round;
 }

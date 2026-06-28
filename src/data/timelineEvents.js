@@ -12,9 +12,12 @@ import portfolioTimelineImg from '../assets/images/portfolio-timeline.svg';
  * @property {string} description
  * @property {'career'|'education'|'project'|'achievement'} category
  * @property {'career'|'education'|'independent'} [trackAffiliation] - required
- *   for category 'project'|'achievement'; which trunk the event is visually
- *   associated with. Not used for 'career'|'education' events — they ARE
- *   their own trunk.
+ *   for category 'project'|'achievement'. The Achievement/Project line
+ *   always hosts its own marker; this controls how that line deviates at
+ *   this event's date — 'career'/'education' make it dip partway toward
+ *   that trunk's line (crossing whatever lines sit between them), while
+ *   'independent' gives it a small standalone bump. Not used for
+ *   'career'|'education' events — they ARE their own trunk.
  * @property {string} [image] - imported asset; omit for a text-only card
  * @property {string} [imageAlt] - required if image is present
  * @property {string} [link] - external URL ("read more")
@@ -64,6 +67,24 @@ const timelineEvents = [
       'The CLI tool crossed 1,000 stars and 40 contributors, becoming a community-maintained project.',
     category: 'achievement',
     trackAffiliation: 'independent',
+  },
+  {
+    id: 'deans-list-honors',
+    date: '2019-05',
+    title: "Dean's List Honors",
+    description:
+      'Recognized for academic excellence, placing in the top percentile of the Computer Science cohort.',
+    category: 'achievement',
+    trackAffiliation: 'education',
+  },
+  {
+    id: 'promoted-senior-engineer',
+    date: '2024-01',
+    title: 'Promoted to Senior Software Engineer',
+    description:
+      'Recognized for technical leadership and consistent delivery, promoted to a senior role on the team.',
+    category: 'achievement',
+    trackAffiliation: 'career',
   },
   {
     id: 'first-fulltime-role',
