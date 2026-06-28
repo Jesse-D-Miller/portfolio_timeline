@@ -72,7 +72,11 @@ export default function EventPopover({
     if (!event) return;
 
     previouslyFocusedRef.current = document.activeElement;
-    popoverRef.current?.querySelector('button')?.focus();
+    // preventScroll: the popover is already positioned where it needs to
+    // be (position: fixed, anchored via getBoundingClientRect) — without
+    // this, focusing the close button can trigger the browser's native
+    // scroll-into-view, which fights the track's intended scroll position.
+    popoverRef.current?.querySelector('button')?.focus({ preventScroll: true });
 
     function handleKeyDown(keyboardEvent) {
       if (keyboardEvent.key === 'Escape') onClose();
@@ -94,7 +98,10 @@ export default function EventPopover({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('pointerdown', handlePointerDown);
-      previouslyFocusedRef.current?.focus?.();
+      // Same preventScroll reasoning as above — restoring focus to the
+      // triggering marker shouldn't be allowed to silently re-scroll the
+      // track out from under the user.
+      previouslyFocusedRef.current?.focus?.({ preventScroll: true });
     };
   }, [event, anchorEl, onClose]);
 

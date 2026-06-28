@@ -1,0 +1,78 @@
+.track {
+  position: relative;
+  overflow-x: auto;
+  cursor: grab;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.track[data-dragging='true'] {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.inner {
+  position: relative;
+}
+
+.tracksGroup {
+  position: relative;
+  height: 60vh;
+}
+
+@media (max-width: 720px) {
+  .tracksGroup {
+    height: 40vh;
+  }
+}
+
+.svgLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.trackPath {
+  fill: none;
+  stroke-width: var(--track-line-width);
+  stroke-dasharray: var(--track-dash);
+  animation: flow-dash 8s linear infinite;
+}
+
+.trackPath[data-reduced-motion='true'] {
+  animation: none;
+}
+
+.trackPath[data-track='career'] {
+  stroke: var(--color-career);
+  opacity: 0.6;
+}
+
+.trackPath[data-track='education'] {
+  stroke: var(--color-education);
+  opacity: 0.6;
+}
+
+.trackPath[data-track='independent'] {
+  stroke: var(--color-text-muted);
+  opacity: 0.35;
+}
+
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -200;
+  }
+}
+
+.rangeSegment {
+  fill: none;
+  stroke: var(--segment-color, var(--color-accent));
+  stroke-width: var(--marker-size);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

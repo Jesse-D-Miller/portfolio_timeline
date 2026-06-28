@@ -1,22 +1,27 @@
 import { useMemo, useRef, useState } from 'react';
 import { getSortedTimelineEvents } from '../../data/timelineEvents';
-import { CATEGORY_ORDER } from '../../utils/categories';
+import { TRACK_IDS } from '../../utils/trackCurve';
 import { PIXELS_PER_YEAR } from '../../utils/timelineScale';
 import { useHorizontalScroll } from '../../hooks/useHorizontalScroll';
 import { useTimelineNavigation } from '../../hooks/useTimelineNavigation';
 import { useInitialScrollPosition } from '../../hooks/useInitialScrollPosition';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
-import TimelineLanes from '../TimelineLanes/TimelineLanes';
+import TimelineTracks from '../TimelineTracks/TimelineTracks';
 import TimelineControls from '../TimelineControls/TimelineControls';
+import TimelineLegend from '../TimelineLegend/TimelineLegend';
 import EventPopover from '../EventPopover/EventPopover';
 import styles from './Timeline.module.css';
 
 export default function Timeline() {
   const events = useMemo(() => getSortedTimelineEvents(), []);
-  const eventsByCategory = useMemo(() => {
-    const grouped = Object.fromEntries(CATEGORY_ORDER.map((c) => [c, []]));
+  const eventsByTrack = useMemo(() => {
+    const grouped = Object.fromEntries(TRACK_IDS.map((t) => [t, []]));
     for (const event of events) {
-      grouped[event.category]?.push(event);
+      if (event.category === 'career' || event.category === 'education') {
+        grouped[event.category].push(event);
+      } else {
+        grouped[event.trackAffiliation ?? 'independent'].push(event);
+      }
     }
     return grouped;
   }, [events]);
@@ -24,7 +29,6 @@ export default function Timeline() {
   const containerRef = useRef(null);
   const markerRefs = useRef(new Map());
 
-  const isNarrowViewport = useMediaQuery('(max-width: 720px)');
   const prefersReducedMotion = useMediaQuery(
     '(prefers-reduced-motion: reduce)',
   );
@@ -75,17 +79,17 @@ export default function Timeline() {
   return (
     <section
       className={styles.wrapper}
-      aria-label="Career, education, project, and achievement timeline"
+      aria-label="Career, education, and independent project timeline"
     >
-      <TimelineLanes
+      <TimelineLegend />
+      <TimelineTracks
         containerRef={containerRef}
-        events={events}
-        eventsByCategory={eventsByCategory}
+        eventsByTrack={eventsByTrack}
         pixelsPerYear={PIXELS_PER_YEAR}
-        isNarrowViewport={isNarrowViewport}
         activeEventId={activeEventId}
         onMarkerActivate={handleMarkerActivate}
         registerMarkerRef={registerMarkerRef}
+        prefersReducedMotion={prefersReducedMotion}
       />
       <TimelineControls
         statusText={statusText}

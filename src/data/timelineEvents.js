@@ -11,6 +11,10 @@ import portfolioTimelineImg from '../assets/images/portfolio-timeline.svg';
  * @property {string} title
  * @property {string} description
  * @property {'career'|'education'|'project'|'achievement'} category
+ * @property {'career'|'education'|'independent'} [trackAffiliation] - required
+ *   for category 'project'|'achievement'; which trunk the event is visually
+ *   associated with. Not used for 'career'|'education' events — they ARE
+ *   their own trunk.
  * @property {string} [image] - imported asset; omit for a text-only card
  * @property {string} [imageAlt] - required if image is present
  * @property {string} [link] - external URL ("read more")
@@ -47,6 +51,7 @@ const timelineEvents = [
     description:
       'Released a developer productivity CLI on GitHub that grew an active community of contributors.',
     category: 'project',
+    trackAffiliation: 'independent',
     image: cliToolImg,
     imageAlt: 'Illustration representing an open-source command line tool',
     link: 'https://github.com/Jesse-D-Miller',
@@ -58,6 +63,7 @@ const timelineEvents = [
     description:
       'The CLI tool crossed 1,000 stars and 40 contributors, becoming a community-maintained project.',
     category: 'achievement',
+    trackAffiliation: 'independent',
   },
   {
     id: 'first-fulltime-role',
@@ -75,6 +81,7 @@ const timelineEvents = [
     description:
       'Designed and built a data-driven timeline with parallel career, education, project, and achievement lanes.',
     category: 'project',
+    trackAffiliation: 'independent',
     image: portfolioTimelineImg,
     imageAlt: 'Illustration representing this portfolio timeline project',
     link: 'https://github.com/Jesse-D-Miller/portfolio_timeline',
@@ -83,6 +90,8 @@ const timelineEvents = [
 
 const REQUIRED_FIELDS = ['id', 'date', 'title', 'description', 'category'];
 const VALID_CATEGORIES = ['career', 'education', 'project', 'achievement'];
+const AFFILIATION_REQUIRED_CATEGORIES = ['project', 'achievement'];
+const VALID_TRACK_AFFILIATIONS = ['career', 'education', 'independent'];
 
 function validateTimelineEvents(events) {
   const seenIds = new Set();
@@ -100,6 +109,22 @@ function validateTimelineEvents(events) {
     if (event.category && !VALID_CATEGORIES.includes(event.category)) {
       console.warn(
         `[timelineEvents] Event "${event.id}" has an invalid category "${event.category}". Expected one of: ${VALID_CATEGORIES.join(', ')}.`,
+      );
+    }
+
+    if (AFFILIATION_REQUIRED_CATEGORIES.includes(event.category)) {
+      if (!event.trackAffiliation) {
+        console.warn(
+          `[timelineEvents] Event "${event.id}" has category "${event.category}" and requires a trackAffiliation ('career'|'education'|'independent').`,
+        );
+      } else if (!VALID_TRACK_AFFILIATIONS.includes(event.trackAffiliation)) {
+        console.warn(
+          `[timelineEvents] Event "${event.id}" has an invalid trackAffiliation "${event.trackAffiliation}". Expected one of: ${VALID_TRACK_AFFILIATIONS.join(', ')}.`,
+        );
+      }
+    } else if (event.trackAffiliation) {
+      console.warn(
+        `[timelineEvents] Event "${event.id}" has category "${event.category}" and should not set trackAffiliation (career/education events are their own trunk).`,
       );
     }
 
