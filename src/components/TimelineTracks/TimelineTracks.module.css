@@ -50,22 +50,26 @@
 
 .trackPath[data-track='career'] {
   stroke: var(--color-career);
-  opacity: 0.6;
+  opacity: 0.7;
+  animation-duration: 6s;
 }
 
 .trackPath[data-track='education'] {
   stroke: var(--color-education);
-  opacity: 0.6;
+  opacity: 0.7;
+  animation-duration: 7s;
 }
 
 .trackPath[data-track='achievement'] {
   stroke: var(--color-achievement);
-  opacity: 0.6;
+  opacity: 0.7;
+  animation-duration: 8s;
 }
 
 .trackPath[data-track='project'] {
   stroke: var(--color-project);
-  opacity: 0.6;
+  opacity: 0.7;
+  animation-duration: 10s;
 }
 
 @keyframes flow-dash {
@@ -80,6 +84,20 @@
   stroke-width: var(--marker-size);
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.todayMarker line {
+  stroke: rgba(242, 243, 245, 0.25);
+  stroke-width: 1px;
+  stroke-dasharray: 4px 4px;
+}
+
+.todayMarker text {
+  fill: rgba(242, 243, 245, 0.45);
+  font-size: 0.65rem;
+  font-family: inherit;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .rangeSegmentOutline {

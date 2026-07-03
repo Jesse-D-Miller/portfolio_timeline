@@ -9,7 +9,10 @@ export default function TimelineLegend() {
         <li key={trackId} className={styles.item}>
           <span
             className={styles.lineSwatch}
-            style={{ backgroundColor: CATEGORY_COLOR_VARS[trackId] }}
+            style={{
+              backgroundColor: CATEGORY_COLOR_VARS[trackId],
+              color: CATEGORY_COLOR_VARS[trackId],
+            }}
           />
           {CATEGORY_LABELS[trackId]}
         </li>

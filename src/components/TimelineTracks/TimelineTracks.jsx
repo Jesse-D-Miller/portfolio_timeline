@@ -216,6 +216,22 @@ export default function TimelineTracks({
                   );
                 });
               })}
+            {groupHeight > 0 &&
+              (() => {
+                const todayX = dateToPixels(
+                  new Date().toISOString().slice(0, 7),
+                  pixelsPerYear,
+                );
+                if (todayX <= 0 || todayX >= totalWidth) return null;
+                return (
+                  <g key="today-marker" className={styles.todayMarker}>
+                    <line x1={todayX} y1={0} x2={todayX} y2={groupHeight} />
+                    <text x={todayX + 6} y={14}>
+                      Now
+                    </text>
+                  </g>
+                );
+              })()}
           </svg>
           {groupHeight > 0 &&
             TRACK_IDS.map((trackId) => {

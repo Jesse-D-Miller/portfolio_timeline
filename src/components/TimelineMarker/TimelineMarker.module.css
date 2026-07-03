@@ -77,7 +77,7 @@
 .connector path {
   fill: none;
   stroke: white;
-  stroke-width: 1.5px;
+  stroke-width: 1.8px;
 }
 
 .label {
@@ -95,8 +95,12 @@
    the colored bar, white text with a shadow for contrast against
    whichever category color the bar happens to be. */
 .containedLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
   color: var(--color-text);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 0 8px rgba(0, 0, 0, 0.4);
 }
 
 /* Point event labels: offset to start exactly where the leader line's

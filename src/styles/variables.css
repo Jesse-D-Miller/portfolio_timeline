@@ -33,6 +33,6 @@
   --marker-size: 0.875rem;
   --marker-outer-size: calc(var(--marker-size) + 5px);
   --axis-height: 2.5rem;
-  --track-line-width: 3px;
+  --track-line-width: 3.5px;
   --track-dash: 12px 8px;
 }

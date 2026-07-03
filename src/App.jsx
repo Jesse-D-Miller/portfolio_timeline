@@ -12,6 +12,7 @@ function App() {
           {siteMeta.location} ·{' '}
           <span className={styles.availability}>{siteMeta.availability}</span>
         </p>
+        <hr className={styles.navDivider} />
         <nav className={styles.links} aria-label="Contact links">
           <a href={`mailto:${siteMeta.links.email}`}>Email</a>
           <a href={siteMeta.links.github} target="_blank" rel="noreferrer">

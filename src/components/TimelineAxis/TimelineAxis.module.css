@@ -14,7 +14,7 @@
 
 .tickMark {
   width: 1px;
-  height: var(--space-2);
+  height: 10px;
   background-color: var(--color-border);
 }
 
@@ -29,7 +29,8 @@
 
 .tickLabel {
   margin-top: var(--space-1);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
   color: var(--color-text-muted);
   white-space: nowrap;
 }

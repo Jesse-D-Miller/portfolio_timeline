@@ -214,6 +214,12 @@ const timelineEvents = [
     description:
       'Supported wildfire suppression operations in rapidly changing environments, executing field tasks with a focus on safety, speed, and team coordination amid shifting priorities.',
     category: 'career',
+    skills: [
+      'Emergency Response',
+      'Team Coordination',
+      'Safety Protocols',
+      'Field Operations',
+    ],
   },
   {
     id: 'bc-wildfire-crew-leader',
@@ -223,6 +229,12 @@ const timelineEvents = [
     description:
       'Led wildfire suppression operations in rapidly changing environments, managing on-the-ground coordination and facilitating clear communication between crews, command centers, and the public during interface emergencies.',
     category: 'career',
+    skills: [
+      'Leadership',
+      'Crisis Communication',
+      'Incident Management',
+      'Public Liaison',
+    ],
   },
   {
     id: 'bc-wildfire-crew-supervisor',
@@ -232,6 +244,13 @@ const timelineEvents = [
     description:
       'Supervised five Initial Attack crews across two bases, ensuring safety, readiness, and performance; coordinated emergency logistics and personnel movements during high-pressure wildfire incidents; mentored new leaders through structured coaching programs.',
     category: 'career',
+    skills: [
+      'Supervision',
+      'Mentorship',
+      'Logistics',
+      'Emergency Management',
+      'HR / Hiring',
+    ],
   },
   {
     id: 'lighthouse-labs-bootcamp',
@@ -241,15 +260,26 @@ const timelineEvents = [
     description:
       'Completed an intensive 12-week full-stack program focused on modern web development. Built multiple full-stack applications using React, Node.js, Express, and PostgreSQL. Developed RESTful APIs, dynamic front-end interfaces, and database-driven features. Applied testing practices including unit, integration, and end-to-end testing (Mocha, Chai, Cypress). Worked with Git-based workflows for version control and collaborative development. Emphasized responsive design, clean code practices, and maintainable architecture.',
     category: 'education',
+    skills: [
+      'React',
+      'Node.js',
+      'Express',
+      'PostgreSQL',
+      'Mocha',
+      'Chai',
+      'Cypress',
+      'Git',
+    ],
   },
   {
     id: 'web-dev-resume',
     date: '2026-02',
     title: 'Web Dev Resume',
     description:
-      'Built an interactive resume with standard and cyber themes, tabbed views, and animated UI. Structured reusable sections with stateful interactions and micro-interactions. Added unit and component tests to keep the UI stable as content evolves. Stack: React, Vite, CSS, Vitest, Mocha, Chai.',
+      'Built an interactive resume with standard and cyber themes, tabbed views, and animated UI. Structured reusable sections with stateful interactions and micro-interactions. Added unit and component tests to keep the UI stable as content evolves.',
     category: 'project',
     trackAffiliation: 'independent',
+    skills: ['React', 'Vite', 'CSS', 'Vitest', 'Mocha', 'Chai'],
     link: 'https://github.com/Jesse-D-Miller/webDevResume',
     videoLink: 'https://www.youtube.com/watch?v=L_zxtbRcubA',
   },
@@ -258,9 +288,10 @@ const timelineEvents = [
     date: '2026-03',
     title: 'Web Dev Resume V2',
     description:
-      'Second-generation interactive resume rebuilt with clearer information architecture and UX focused on recruiter scanability. Raised production confidence by adding unit and end-to-end coverage across critical user journeys. Refined persistence, theming architecture, and modular content organization. Stack: React, Vite, React Router, CSS, Vitest, Playwright.',
+      'Second-generation interactive resume rebuilt with clearer information architecture and UX focused on recruiter scanability. Raised production confidence by adding unit and end-to-end coverage across critical user journeys. Refined persistence, theming architecture, and modular content organization.',
     category: 'project',
     trackAffiliation: 'independent',
+    skills: ['React', 'Vite', 'React Router', 'CSS', 'Vitest', 'Playwright'],
     link: 'https://github.com/Jesse-D-Miller/webDevResumeV2',
     videoLink: 'https://www.youtube.com/watch?v=2ZCcEtCO20I',
   },
@@ -272,6 +303,7 @@ const timelineEvents = [
       'A data-driven interactive timeline portfolio built with Vite, React, and plain CSS. Features a subway-map design with octolinear geometry, four concurrent track streams, branch lanes for overlapping jobs, and dynamic achievement routing.',
     category: 'project',
     trackAffiliation: 'independent',
+    skills: ['React', 'Vite', 'CSS', 'SVG', 'JavaScript', 'Playwright'],
   },
   {
     id: 'supernatural-landscapes',

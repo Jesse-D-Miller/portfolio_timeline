@@ -1,5 +1,6 @@
 import CategoryBadge from '../CategoryBadge/CategoryBadge';
 import { formatDate } from '../../utils/formatDate';
+import { CATEGORY_COLOR_VARS } from '../../utils/categories';
 import styles from './TimelineEventCard.module.css';
 
 export default function TimelineEventCard({ event, asListItem = true }) {
@@ -15,6 +16,7 @@ export default function TimelineEventCard({ event, asListItem = true }) {
       role="article"
       aria-label={`${event.title}, ${dateLabel}`}
       data-event-id={event.id}
+      style={{ '--card-color': CATEGORY_COLOR_VARS[event.category] }}
     >
       {event.image && (
         <div className={styles.imageWrapper}>
@@ -34,6 +36,15 @@ export default function TimelineEventCard({ event, asListItem = true }) {
       </div>
       <h3 className={styles.title}>{event.title}</h3>
       <p className={styles.description}>{event.description}</p>
+      {event.skills?.length > 0 && (
+        <ul className={styles.skills} aria-label="Skills">
+          {event.skills.map((skill) => (
+            <li key={skill} className={styles.skillTag}>
+              {skill}
+            </li>
+          ))}
+        </ul>
+      )}
       {(event.link || event.videoLink) && (
         <div className={styles.links}>
           {event.link && (
