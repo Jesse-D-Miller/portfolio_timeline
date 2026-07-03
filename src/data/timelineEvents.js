@@ -56,6 +56,14 @@ const timelineEvents = [
     category: 'education',
   },
   {
+    id: 'outrigger-world-championships',
+    date: '2012-06',
+    title: 'Outrigger World Championships',
+    description: 'Competed as a member of the Canadian National Team.',
+    category: 'achievement',
+    trackAffiliation: 'independent',
+  },
+  {
     id: 'pta-award',
     date: '2013-05',
     title: 'PTA Award',
