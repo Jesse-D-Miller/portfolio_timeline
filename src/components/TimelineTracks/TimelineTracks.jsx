@@ -155,41 +155,57 @@ export default function TimelineTracks({
                 />
               ))}
             {groupHeight > 0 &&
-              TRACK_IDS.map((trackId) =>
-                (eventsByTrack[trackId] ?? [])
+              TRACK_IDS.map((trackId) => {
+                const trackLanes = deviations[trackId]?.lanes ?? [];
+                const laneIndexOf = (id) => {
+                  for (let i = 0; i < trackLanes.length; i++) {
+                    if (
+                      trackLanes[i].some((d) =>
+                        d.eventId.split('+').includes(id),
+                      )
+                    )
+                      return i;
+                  }
+                  return 0;
+                };
+                // Branch-lane events (e.g. Beer Farmers) paint first so the
+                // primary lane (BCWS) always renders on top in SVG order.
+                const rangedEvents = (eventsByTrack[trackId] ?? [])
                   .filter((event) => event.endDate)
-                  .map((event) => {
-                    const startX = dateToPixels(event.date, pixelsPerYear);
-                    const endX = dateToPixels(event.endDate, pixelsPerYear);
-                    const laneDeviations = findEventLane(
-                      deviations[trackId]?.lanes ?? [],
-                      event.id,
-                    );
-                    const d = buildTrackPathD(
-                      startX,
-                      endX,
-                      baselines[trackId],
-                      laneDeviations,
-                    );
-                    const segmentStyle = {
-                      '--segment-color': CATEGORY_COLOR_VARS[event.category],
-                    };
-                    return (
-                      <g key={event.id}>
-                        <path
-                          className={styles.rangeSegmentOutline}
-                          style={segmentStyle}
-                          d={d}
-                        />
-                        <path
-                          className={styles.rangeSegment}
-                          style={segmentStyle}
-                          d={d}
-                        />
-                      </g>
-                    );
-                  }),
-              )}
+                  .slice()
+                  .sort((a, b) => laneIndexOf(b.id) - laneIndexOf(a.id));
+                return rangedEvents.map((event) => {
+                  const startX = dateToPixels(event.date, pixelsPerYear);
+                  const endX = dateToPixels(event.endDate, pixelsPerYear);
+                  const laneDeviations = findEventLane(
+                    deviations[trackId]?.lanes ?? [],
+                    event.id,
+                  );
+                  const d = buildTrackPathD(
+                    startX,
+                    endX,
+                    baselines[trackId],
+                    laneDeviations,
+                  );
+                  const segmentStyle = {
+                    '--segment-color': CATEGORY_COLOR_VARS[event.category],
+                  };
+                  return (
+                    <g key={event.id}>
+                      <path
+                        className={styles.rangeSegmentOutline}
+                        style={segmentStyle}
+                        d={d}
+                      />
+                      <path
+                        className={styles.rangeSegment}
+                        style={segmentStyle}
+                        d={d}
+                      />
+                    </g>
+                  );
+                });
+              })}
           </svg>
           {groupHeight > 0 &&
             TRACK_IDS.map((trackId) => {
