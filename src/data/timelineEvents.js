@@ -163,6 +163,14 @@ const timelineEvents = [
     category: 'career',
   },
   {
+    id: 'bcws-operations-conference',
+    date: '2024-03',
+    title: 'BC Wildfire Operations Conference — Presenter',
+    description: 'Selected to present at the annual BC Wildfire Operations Conference, an opportunity typically extended to senior leadership.',
+    category: 'achievement',
+    trackAffiliation: 'career',
+  },
+  {
     id: 'bcws-hiring-team',
     date: '2023-10',
     title: 'BC Wildfire — Coastal Fire Centre Hiring Team',
