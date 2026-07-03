@@ -74,9 +74,10 @@ const timelineEvents = [
   },
   {
     id: 'row-to-podium',
-    date: '2014-03',
+    date: '2014-05',
     title: 'Row to Podium',
-    description: "Selected for Rowing Canada's national elite talent identification program, which recruits high-performing athletes from any sport background and develops them toward Olympic and Paralympic competition.",
+    description:
+      "Selected for Rowing Canada's national elite talent identification program, which recruits high-performing athletes from any sport background and develops them toward Olympic and Paralympic competition.",
     category: 'achievement',
     trackAffiliation: 'independent',
   },
@@ -174,7 +175,8 @@ const timelineEvents = [
     id: 'bcws-above-and-beyond',
     date: '2024-10',
     title: 'BC Wildfire — Above & Beyond Award',
-    description: 'Received the Above & Beyond award for exceptional performance during the 2024 wildfire season.',
+    description:
+      'Received the Above & Beyond award for exceptional performance during the 2024 wildfire season.',
     category: 'achievement',
     trackAffiliation: 'career',
   },
@@ -182,7 +184,8 @@ const timelineEvents = [
     id: 'bcws-operations-conference',
     date: '2024-03',
     title: 'BC Wildfire Operations Conference — Presenter',
-    description: 'Selected to present at the annual BC Wildfire Operations Conference, an opportunity typically extended to senior leadership.',
+    description:
+      'Selected to present at the annual BC Wildfire Operations Conference, an opportunity typically extended to senior leadership.',
     category: 'achievement',
     trackAffiliation: 'career',
   },
