@@ -244,7 +244,7 @@ const timelineEvents = [
   },
   {
     id: 'web-dev-resume',
-    date: '2025-08',
+    date: '2026-02',
     title: 'Web Dev Resume',
     description:
       'Built an interactive resume with standard and cyber themes, tabbed views, and animated UI. Structured reusable sections with stateful interactions and micro-interactions. Added unit and component tests to keep the UI stable as content evolves. Stack: React, Vite, CSS, Vitest, Mocha, Chai.',
@@ -254,7 +254,7 @@ const timelineEvents = [
   },
   {
     id: 'web-dev-resume-v2',
-    date: '2026-02',
+    date: '2026-03',
     title: 'Web Dev Resume V2',
     description:
       'Second-generation interactive resume rebuilt with clearer information architecture and UX focused on recruiter scanability. Raised production confidence by adding unit and end-to-end coverage across critical user journeys. Refined persistence, theming architecture, and modular content organization. Stack: React, Vite, React Router, CSS, Vitest, Playwright.',

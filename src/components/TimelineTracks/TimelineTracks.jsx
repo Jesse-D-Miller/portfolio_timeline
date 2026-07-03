@@ -25,7 +25,12 @@ import styles from './TimelineTracks.module.css';
 const LABEL_CROWD_PX = PIXELS_PER_YEAR * 0.6; // ~7 months
 const LABEL_STAGGER_STEP_PX = 32;
 
-function computeConnectorExtensions(trackEvents, pixPerYear) {
+function computeConnectorExtensions(trackEvents, pixPerYear, trackId) {
+  // Only stagger connectors on the achievement track — point events there
+  // can touch the same trunk (education or career) and land at the same y,
+  // making labels collide. Project events alternate ± direction naturally
+  // so they self-separate without extra connector length.
+  if (trackId !== 'achievement') return new Map();
   const points = trackEvents
     .filter((e) => !e.endDate)
     .slice()
@@ -217,6 +222,7 @@ export default function TimelineTracks({
               const extensions = computeConnectorExtensions(
                 eventsByTrack[trackId] ?? [],
                 pixelsPerYear,
+                trackId,
               );
               return (eventsByTrack[trackId] ?? []).map((event, index) => (
                 <TimelineMarker
