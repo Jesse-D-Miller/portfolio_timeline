@@ -46,7 +46,7 @@ const timelineEvents = [
     description:
       'Built scale mudslide models and popsicle stick structures to test how different building designs resist destruction during a mudslide. Investigated the relationship between structural form and survival under simulated debris flow conditions.',
     category: 'project',
-    trackAffiliation: 'independent',
+    trackAffiliation: 'education',
   },
   {
     id: 'elementary-school',
