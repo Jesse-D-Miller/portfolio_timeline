@@ -163,6 +163,14 @@ const timelineEvents = [
     category: 'career',
   },
   {
+    id: 'bcws-hiring-team',
+    date: '2023-10',
+    title: 'BC Wildfire — Coastal Fire Centre Hiring Team',
+    description: 'Chosen to join the hiring team for the Coastal Fire Centre.',
+    category: 'achievement',
+    trackAffiliation: 'career',
+  },
+  {
     id: 'bc-wildfire-crew-member',
     date: '2018-01',
     endDate: '2021-01',
