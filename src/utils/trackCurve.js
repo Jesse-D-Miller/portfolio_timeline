@@ -112,6 +112,12 @@ export function buildTrackPathD(rangeStart, rangeEnd, baselinePx, deviations) {
     }
   }
 
+  // Sort by x so overlapping-footprint deviations (e.g. an intro deviation
+  // whose footprintEnd lands inside a tent deviation's footprint) don't
+  // produce x-inversions in the path. Non-overlapping deviations are
+  // already in x-order so the sort is a no-op for them.
+  interiorPoints.sort((a, b) => a[0] - b[0]);
+
   const points = [
     [rangeStart, getTrackY(rangeStart, baselinePx, deviations)],
     ...interiorPoints,

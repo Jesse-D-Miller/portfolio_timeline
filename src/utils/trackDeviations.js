@@ -421,6 +421,36 @@ export function buildTrackDeviations(
   });
 
   const resolved = mergeSameDirectionOverlaps(deviations);
+
+  // Project track: enter from off-screen below at 45° arriving exactly at
+  // the first event's dot. Added AFTER merging so it is never folded into
+  // the science-fair cluster (which would collapse the off-screen amplitude
+  // to the cluster's shallow peak and kill the 45° effect).
+  //
+  // exitOffsetPx = science-fair's peakOffsetPx so the intro exits at the
+  // dot's y-level rather than the project baseline, making the line pass
+  // directly through the marker. The slope formula: (peakOffsetPx -
+  // exitOffsetPx) / span = (INTRO_RAMP - exitOffset) / INTRO_RAMP ≈ 1,
+  // i.e. true 45° regardless of viewport height.
+  if (trackId === 'project' && deviations.length > 0) {
+    const INTRO_RAMP = 10000;
+    const firstEventCenterX = dateToPixels(sortedEvents[0].date, pixelsPerYear);
+    const firstEventPeakOffset = deviations[0].peakOffsetPx;
+    const introDev = {
+      footprintStart: firstEventCenterX - INTRO_RAMP,
+      peakStart: firstEventCenterX - INTRO_RAMP,
+      peakEnd: firstEventCenterX - INTRO_RAMP,
+      footprintEnd: firstEventCenterX,
+      peakOffsetPx: INTRO_RAMP,
+      exitOffsetPx: firstEventPeakOffset,
+      eventId: 'project-intro',
+    };
+    return {
+      primary: [introDev, ...resolved],
+      lanes: [[introDev, ...resolved]],
+    };
+  }
+
   return { primary: resolved, lanes: [resolved] };
 }
 
