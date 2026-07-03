@@ -234,6 +234,15 @@ const timelineEvents = [
     category: 'education',
   },
   {
+    id: 'portfolio-timeline',
+    date: '2026-06',
+    title: 'Portfolio Timeline',
+    description:
+      'A data-driven interactive timeline portfolio built with Vite, React, and plain CSS. Features a subway-map design with octolinear geometry, four concurrent track streams, branch lanes for overlapping jobs, and dynamic achievement routing.',
+    category: 'project',
+    trackAffiliation: 'independent',
+  },
+  {
     id: 'supernatural-landscapes',
     date: '2026-05',
     endDate: '2026-11',
