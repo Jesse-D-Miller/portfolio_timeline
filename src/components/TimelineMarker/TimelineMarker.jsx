@@ -1,6 +1,9 @@
 import { dateToPixels } from '../../utils/timelineScale';
 import { getTrackY } from '../../utils/trackCurve';
-import { TRUNK_RANGED_MAX_AMPLITUDE_PX } from '../../utils/trackDeviations';
+import {
+  TRUNK_RANGED_MAX_AMPLITUDE_PX,
+  LANE_DEPTH_PX,
+} from '../../utils/trackDeviations';
 import { CATEGORY_COLOR_VARS } from '../../utils/categories';
 import { formatDate } from '../../utils/formatDate';
 import styles from './TimelineMarker.module.css';
@@ -10,13 +13,16 @@ import styles from './TimelineMarker.module.css';
 // The button here is just the click/focus hit-area for that bar, so it's
 // centered on the track's baseline (not the start point) and tall enough
 // to cover the deviation the curve could jog through within the range —
-// otherwise part of the visible bar could end up unclickable. Bounded by
-// TRUNK_RANGED_MAX_AMPLITUDE_PX since the only ranged events today are
-// Career/Education's own elevation, which is capped at that amplitude; a
-// future ranged Achievement/Project event with a directed (career/
-// education) affiliation could dip further than this and would need a
-// larger bound revisited at that point.
+// otherwise part of the visible bar could end up unclickable. Sized for
+// TRUNK_RANGED_MAX_AMPLITUDE_PX plus one branch lane's worth of extra
+// depth (LANE_DEPTH_PX) since a concurrent second job is the deepest a
+// trunk's bar goes today; a third concurrent lane would need this
+// revisited.
 const RANGED_HIT_AREA_PADDING_PX = 16;
+
+// Gap between the bar's flat (plateau) start and the left edge of its
+// label, so the text doesn't sit flush against the bar's rounded cap.
+const RANGED_LABEL_INSET_PX = 14;
 
 // Drafting-style leader line connecting a point marker to its label: a
 // straight run right off the dot, then a short 45-degree segment leading
@@ -59,24 +65,32 @@ export default function TimelineMarker({
     '--marker-color': CATEGORY_COLOR_VARS[event.category],
   };
 
-  // Ranged labels sit centered directly on the bar itself, at the bar's
-  // actual rendered position (start/end, midpoint) — not at the
-  // surrounding wrapper's edges, which are deliberately oversized (see
-  // RANGED_HIT_AREA_PADDING_PX above) purely for the invisible hit area
-  // and don't track where the visible bar actually is.
+  // Ranged labels sit left-aligned against the bar's own flat (plateau)
+  // section — not centered on the wrapper, which is deliberately oversized
+  // (see RANGED_HIT_AREA_PADDING_PX above) purely for the invisible hit
+  // area and doesn't track where the visible bar actually is, and not the
+  // bar's midpoint either, since for a short event near a chain boundary
+  // that midpoint can fall inside the diagonal ramp rather than the flat
+  // run the text needs to sit on.
   let labelStyle;
   if (isRanged) {
     const endPx = dateToPixels(event.endDate, pixelsPerYear);
-    const midPx = (startPx + endPx) / 2;
-    const midY = getTrackY(midPx, baselinePx, deviations);
+    const deviation = deviations?.find((d) =>
+      d.eventId.split('+').includes(event.id),
+    );
+    const flatStartPx = deviation
+      ? Math.max(startPx, deviation.peakStart)
+      : startPx;
+    const flatY = getTrackY(flatStartPx, baselinePx, deviations);
     wrapperStyle.top = baselinePx;
     wrapperStyle.width = Math.max(0, endPx - startPx);
     wrapperStyle.height =
-      TRUNK_RANGED_MAX_AMPLITUDE_PX * 2 + RANGED_HIT_AREA_PADDING_PX;
+      (TRUNK_RANGED_MAX_AMPLITUDE_PX + LANE_DEPTH_PX) * 2 +
+      RANGED_HIT_AREA_PADDING_PX;
     labelStyle = {
-      left: midPx - startPx,
-      top: `calc(50% + ${midY - baselinePx}px)`,
-      transform: 'translate(-50%, -50%)',
+      left: flatStartPx - startPx + RANGED_LABEL_INSET_PX,
+      top: `calc(50% + ${flatY - baselinePx}px)`,
+      transform: 'translateY(-50%)',
     };
   } else {
     wrapperStyle.top = startY;

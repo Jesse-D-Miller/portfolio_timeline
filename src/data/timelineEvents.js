@@ -1,8 +1,4 @@
 import { AXIS_START_YEAR, getAxisEndYear } from '../utils/timelineScale';
-import internshipImg from '../assets/images/internship.svg';
-import graduationImg from '../assets/images/graduation.svg';
-import cliToolImg from '../assets/images/cli-tool.svg';
-import portfolioTimelineImg from '../assets/images/portfolio-timeline.svg';
 
 /**
  * @typedef {Object} TimelineEvent
@@ -24,88 +20,147 @@ import portfolioTimelineImg from '../assets/images/portfolio-timeline.svg';
  * @property {string} [endDate] - ISO date, for ranged events (e.g. a job or degree)
  */
 
+// NOTE: the source resume only gives years for this section, not months —
+// each date below defaults to January of the stated year. Replace with
+// exact months if you have them; the dev-time validation below won't flag
+// this, since "YYYY-MM" with January is a perfectly valid date, it's just
+// an assumption worth double-checking against your records.
+// NOTE: exact elementary school dates weren't given — extrapolated
+// backward from high school's known start (Sept 2008) assuming a standard
+// Kindergarten-through-Grade-7 span (8 school years), each running
+// September to June. Replace with exact dates if you have them.
 /** @type {TimelineEvent[]} */
 const timelineEvents = [
   {
-    id: 'cs-degree',
-    date: '2016-09',
-    endDate: '2020-05',
-    title: 'Computer Science Degree',
-    description:
-      'Undergraduate studies in Computer Science, focusing on software fundamentals and systems design.',
+    id: 'elementary-school',
+    date: '2000-09',
+    endDate: '2008-06',
+    title: 'Elementary School',
+    description: 'Kindergarten through Grade 7.',
     category: 'education',
-    image: graduationImg,
-    imageAlt: 'Illustration representing a university degree',
   },
   {
-    id: 'first-internship',
-    date: '2019-06',
-    title: 'First Software Engineering Internship',
-    description:
-      'Joined a product team as a summer intern, shipping my first features to production users.',
-    category: 'career',
-    image: internshipImg,
-    imageAlt: 'Illustration representing a software engineering internship',
+    id: 'high-school',
+    date: '2008-09',
+    endDate: '2013-06',
+    title: 'High School',
+    description: 'Grade 8 through Grade 12.',
+    category: 'education',
   },
   {
-    id: 'launched-cli-tool',
-    date: '2021-03',
-    title: 'Launched Open-Source CLI Tool',
-    description:
-      'Released a developer productivity CLI on GitHub that grew an active community of contributors.',
-    category: 'project',
-    trackAffiliation: 'independent',
-    image: cliToolImg,
-    imageAlt: 'Illustration representing an open-source command line tool',
-    link: 'https://github.com/Jesse-D-Miller',
+    id: 'capilano-university',
+    date: '2013-09',
+    endDate: '2014-12',
+    title: 'Capilano University — BASc Engineering Science',
+    description: 'Engineering Science coursework in North Vancouver, BC.',
+    category: 'education',
   },
   {
-    id: 'cli-tool-1k-stars',
-    date: '2023-02',
-    title: 'Open-Source CLI Tool Hits 1,000 GitHub Stars',
+    id: 'sfu-engineering-science',
+    date: '2015-01',
+    endDate: '2017-04',
+    title: 'Simon Fraser University — BASc Engineering Science (Incomplete)',
     description:
-      'The CLI tool crossed 1,000 stars and 40 contributors, becoming a community-maintained project.',
-    category: 'achievement',
-    trackAffiliation: 'independent',
+      'Completed coursework in physics, calculus, systems design, and programming in Burnaby, BC.',
+    category: 'education',
   },
   {
-    id: 'deans-list-honors',
-    date: '2019-05',
-    title: "Dean's List Honors",
+    id: 'folklore-tree-planter-2015',
+    date: '2015-05',
+    endDate: '2015-08',
+    title: 'Folklore Ltd. — Tree Planter',
     description:
-      'Recognized for academic excellence, placing in the top percentile of the Computer Science cohort.',
-    category: 'achievement',
-    trackAffiliation: 'education',
-  },
-  {
-    id: 'promoted-senior-engineer',
-    date: '2024-01',
-    title: 'Promoted to Senior Software Engineer',
-    description:
-      'Recognized for technical leadership and consistent delivery, promoted to a senior role on the team.',
-    category: 'achievement',
-    trackAffiliation: 'career',
-  },
-  {
-    id: 'first-fulltime-role',
-    date: '2022-08',
-    endDate: '2024-12',
-    title: 'Joined First Full-Time Engineering Role',
-    description:
-      'Started as a full-time software engineer, working across the stack on customer-facing products.',
+      'Planted 270,000 trees over two seasons to fund university education. Demonstrated strong work ethic by consistently being one of the highest production planters in a camp of more than 60 people.',
     category: 'career',
   },
   {
-    id: 'built-portfolio-timeline',
-    date: '2026-06',
-    title: 'Built This Portfolio Timeline',
+    id: 'folklore-tree-planter-2017',
+    date: '2017-05',
+    endDate: '2017-08',
+    title: 'Folklore Ltd. — Tree Planter',
     description:
-      'Designed and built a data-driven timeline with parallel career, education, project, and achievement lanes.',
-    category: 'project',
-    trackAffiliation: 'independent',
-    image: portfolioTimelineImg,
-    imageAlt: 'Illustration representing this portfolio timeline project',
-    link: 'https://github.com/Jesse-D-Miller/portfolio_timeline',
+      'Planted 270,000 trees over two seasons to fund university education. Demonstrated strong work ethic by consistently being one of the highest production planters in a camp of more than 60 people.',
+    category: 'career',
+  },
+  {
+    id: 'beer-farmers-2018',
+    date: '2018-10',
+    endDate: '2019-04',
+    title: 'The Beer Farmers — Taproom Server',
+    description:
+      'Provided friendly, professional customer service in a busy taproom environment. Maintained a clean, organized workspace to support safe and efficient service.',
+    category: 'career',
+  },
+  {
+    id: 'beer-farmers-2019',
+    date: '2019-10',
+    endDate: '2020-04',
+    title: 'The Beer Farmers — Taproom Server',
+    description:
+      'Provided friendly, professional customer service in a busy taproom environment. Maintained a clean, organized workspace to support safe and efficient service.',
+    category: 'career',
+  },
+  {
+    id: 'beer-farmers-2020',
+    date: '2020-10',
+    endDate: '2021-04',
+    title: 'The Beer Farmers — Taproom Server',
+    description:
+      'Provided friendly, professional customer service in a busy taproom environment. Maintained a clean, organized workspace to support safe and efficient service.',
+    category: 'career',
+  },
+  {
+    id: 'beer-farmers-2021',
+    date: '2021-10',
+    endDate: '2022-04',
+    title: 'The Beer Farmers — Taproom Server',
+    description:
+      'Provided friendly, professional customer service in a busy taproom environment. Maintained a clean, organized workspace to support safe and efficient service.',
+    category: 'career',
+  },
+  {
+    id: 'bc-wildfire-crew-member',
+    date: '2018-01',
+    endDate: '2021-01',
+    title: 'BC Wildfire Service — Crew Member',
+    description:
+      'Supported wildfire suppression operations in rapidly changing environments, executing field tasks with a focus on safety, speed, and team coordination amid shifting priorities.',
+    category: 'career',
+  },
+  {
+    id: 'bc-wildfire-crew-leader',
+    date: '2021-01',
+    endDate: '2023-01',
+    title: 'BC Wildfire Service — Crew Leader',
+    description:
+      'Led wildfire suppression operations in rapidly changing environments, managing on-the-ground coordination and facilitating clear communication between crews, command centers, and the public during interface emergencies.',
+    category: 'career',
+  },
+  {
+    id: 'bc-wildfire-crew-supervisor',
+    date: '2023-01',
+    endDate: '2025-01',
+    title: 'BC Wildfire Service — Crew Supervisor',
+    description:
+      'Supervised five Initial Attack crews across two bases, ensuring safety, readiness, and performance; coordinated emergency logistics and personnel movements during high-pressure wildfire incidents; mentored new leaders through structured coaching programs.',
+    category: 'career',
+  },
+  {
+    id: 'lighthouse-labs-bootcamp',
+    date: '2025-03',
+    endDate: '2025-07',
+    title: 'Lighthouse Labs — Full-Stack Web Development Bootcamp',
+    description:
+      'Completed an intensive 12-week full-stack program focused on modern web development. Built multiple full-stack applications using React, Node.js, Express, and PostgreSQL. Developed RESTful APIs, dynamic front-end interfaces, and database-driven features. Applied testing practices including unit, integration, and end-to-end testing (Mocha, Chai, Cypress). Worked with Git-based workflows for version control and collaborative development. Emphasized responsive design, clean code practices, and maintainable architecture.',
+    category: 'education',
+  },
+  {
+    id: 'bcit-ecet-diploma',
+    date: '2027-01',
+    endDate: '2029-01',
+    title: 'BCIT — Electrical and Computer Engineering Technology Diploma',
+    description: 'A 2-year diploma program.',
+    category: 'education',
   },
 ];
 
@@ -117,7 +172,7 @@ const VALID_TRACK_AFFILIATIONS = ['career', 'education', 'independent'];
 function validateTimelineEvents(events) {
   const seenIds = new Set();
   const axisStart = AXIS_START_YEAR;
-  const axisEnd = getAxisEndYear();
+  const axisEnd = getAxisEndYear(events);
 
   for (const event of events) {
     const missing = REQUIRED_FIELDS.filter((field) => !event[field]);

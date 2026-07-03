@@ -9,7 +9,33 @@
   text-align: center;
 }
 
-.header p {
+.title {
   color: var(--color-text-muted);
   margin-top: var(--space-2);
+  font-size: 1rem;
+}
+
+.meta {
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+  font-size: 0.85rem;
+}
+
+.links {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.links a {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.links a:hover,
+.links a:focus-visible {
+  text-decoration: underline;
 }

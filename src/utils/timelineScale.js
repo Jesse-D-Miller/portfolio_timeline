@@ -1,14 +1,23 @@
 export const AXIS_START_YEAR = 1994;
-export const PIXELS_PER_YEAR = 120;
+export const PIXELS_PER_YEAR = 360;
 export const FOCUS_YEAR = 2013;
 
 /**
- * The last year the axis should cover. Computed at call time (not a
- * constant) so the axis always extends through "now" without a stale build.
+ * The last year the axis should cover — at least the current year (computed
+ * at call time, not a constant, so it never goes stale), but extended
+ * further if any event runs past it, since the data can include
+ * future-dated events (an upcoming program's start/end) that need room too.
+ * @param {Array<{date: string, endDate?: string}>} [events]
  * @returns {number}
  */
-export function getAxisEndYear() {
-  return new Date().getFullYear();
+export function getAxisEndYear(events = []) {
+  const currentYear = new Date().getFullYear();
+  const eventYears = events.flatMap((event) =>
+    [event.date, event.endDate]
+      .filter(Boolean)
+      .map((value) => new Date(value).getUTCFullYear()),
+  );
+  return Math.max(currentYear, ...eventYears);
 }
 
 /**
@@ -29,11 +38,15 @@ export function dateToPixels(isoDate, pixelsPerYear = PIXELS_PER_YEAR) {
 
 /**
  * Total scrollable width of the axis, from AXIS_START_YEAR through one year
- * past getAxisEndYear() so the most recent events aren't flush against the
+ * past axisEndYear so the most recent events aren't flush against the
  * track's clipped edge.
+ * @param {number} axisEndYear - from getAxisEndYear()
  * @param {number} [pixelsPerYear]
  * @returns {number}
  */
-export function getAxisTotalWidth(pixelsPerYear = PIXELS_PER_YEAR) {
-  return (getAxisEndYear() + 1 - AXIS_START_YEAR) * pixelsPerYear;
+export function getAxisTotalWidth(
+  axisEndYear,
+  pixelsPerYear = PIXELS_PER_YEAR,
+) {
+  return (axisEndYear + 1 - AXIS_START_YEAR) * pixelsPerYear;
 }

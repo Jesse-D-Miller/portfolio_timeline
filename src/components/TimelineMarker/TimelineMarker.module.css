@@ -82,9 +82,6 @@
 
 .label {
   position: absolute;
-  max-width: 9rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 0.7rem;
   color: var(--color-text);
@@ -92,7 +89,7 @@
 }
 
 /* Ranged event labels: positioned via inline style (computed in
-   TimelineMarker.jsx from the bar's actual midpoint position, since the
+   TimelineMarker.jsx from the bar's actual flat-section start, since the
    wrapper's own box is deliberately oversized for the invisible hit area
    and doesn't track where the visible bar is) — contained directly inside
    the colored bar, white text with a shadow for contrast against

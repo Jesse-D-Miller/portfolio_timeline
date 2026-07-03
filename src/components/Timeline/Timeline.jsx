@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { getSortedTimelineEvents } from '../../data/timelineEvents';
 import { TRACK_IDS } from '../../utils/trackCurve';
-import { PIXELS_PER_YEAR } from '../../utils/timelineScale';
+import { PIXELS_PER_YEAR, getAxisEndYear } from '../../utils/timelineScale';
 import { useHorizontalScroll } from '../../hooks/useHorizontalScroll';
 import { useTimelineNavigation } from '../../hooks/useTimelineNavigation';
 import { useInitialScrollPosition } from '../../hooks/useInitialScrollPosition';
@@ -14,6 +14,7 @@ import styles from './Timeline.module.css';
 
 export default function Timeline() {
   const events = useMemo(() => getSortedTimelineEvents(), []);
+  const axisEndYear = useMemo(() => getAxisEndYear(events), [events]);
   const eventsByTrack = useMemo(() => {
     const grouped = Object.fromEntries(TRACK_IDS.map((t) => [t, []]));
     for (const event of events) {
@@ -81,6 +82,7 @@ export default function Timeline() {
       <TimelineTracks
         containerRef={containerRef}
         eventsByTrack={eventsByTrack}
+        axisEndYear={axisEndYear}
         pixelsPerYear={PIXELS_PER_YEAR}
         activeEventId={activeEventId}
         onMarkerActivate={handleMarkerActivate}

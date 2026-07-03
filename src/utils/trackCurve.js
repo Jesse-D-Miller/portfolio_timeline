@@ -20,6 +20,11 @@ export const TRACK_BASELINE_FRACTION = {
  * @property {number} peakEnd - x where it starts returning to baseline
  * @property {number} footprintEnd - x where it's back at baseline
  * @property {number} peakOffsetPx - signed y offset from baseline at the peak/plateau
+ * @property {number} [entryOffsetPx] - signed y offset at footprintStart,
+ *   default 0 (flat baseline). A concurrent-job branch lane sets this to
+ *   the primary line's own offset at that x, so the branch visibly forks
+ *   off the primary line instead of off flat baseline.
+ * @property {number} [exitOffsetPx] - same as entryOffsetPx, at footprintEnd
  */
 
 /**
@@ -34,19 +39,27 @@ export const TRACK_BASELINE_FRACTION = {
  */
 export function getTrackY(x, baselinePx, deviations) {
   for (const d of deviations) {
-    if (x <= d.footprintStart || x >= d.footprintEnd) continue;
+    // Inclusive bounds: a branch deviation's entryOffsetPx/exitOffsetPx
+    // can be nonzero (it forks off the primary line's own current offset,
+    // not flat baseline), and a bar's own rangeStart/rangeEnd in
+    // buildTrackPathD lands exactly on footprintStart/footprintEnd — an
+    // exclusive check here would skip the deviation right at that edge
+    // and silently fall back to flat baseline instead of entry/exitOffsetPx.
+    if (x < d.footprintStart || x > d.footprintEnd) continue;
 
     if (x >= d.peakStart && x <= d.peakEnd) {
       return baselinePx + d.peakOffsetPx;
     }
+    const entryOffsetPx = d.entryOffsetPx ?? 0;
+    const exitOffsetPx = d.exitOffsetPx ?? 0;
     if (x < d.peakStart) {
       const span = d.peakStart - d.footprintStart;
       const t = span > 0 ? (x - d.footprintStart) / span : 1;
-      return baselinePx + d.peakOffsetPx * t;
+      return baselinePx + entryOffsetPx + (d.peakOffsetPx - entryOffsetPx) * t;
     }
     const span = d.footprintEnd - d.peakEnd;
     const t = span > 0 ? (d.footprintEnd - x) / span : 1;
-    return baselinePx + d.peakOffsetPx * t;
+    return baselinePx + exitOffsetPx + (d.peakOffsetPx - exitOffsetPx) * t;
   }
   return baselinePx;
 }
@@ -75,11 +88,13 @@ export function buildTrackPathD(rangeStart, rangeEnd, baselinePx, deviations) {
 
   for (const d of deviations) {
     const peakY = baselinePx + d.peakOffsetPx;
+    const entryY = baselinePx + (d.entryOffsetPx ?? 0);
+    const exitY = baselinePx + (d.exitOffsetPx ?? 0);
     const vertices = [
-      [d.footprintStart, baselinePx],
+      [d.footprintStart, entryY],
       [d.peakStart, peakY],
       [d.peakEnd, peakY],
-      [d.footprintEnd, baselinePx],
+      [d.footprintEnd, exitY],
     ];
     for (const vertex of vertices) {
       if (vertex[0] > rangeStart && vertex[0] < rangeEnd) {

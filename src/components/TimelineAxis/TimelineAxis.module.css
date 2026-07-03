@@ -18,6 +18,15 @@
   background-color: var(--color-border);
 }
 
+.monthTick {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: var(--space-1);
+  background-color: var(--color-border);
+  opacity: 0.5;
+}
+
 .tickLabel {
   margin-top: var(--space-1);
   font-size: 0.75rem;

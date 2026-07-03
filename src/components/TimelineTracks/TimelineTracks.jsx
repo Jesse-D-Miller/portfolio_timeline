@@ -4,7 +4,10 @@ import {
   TRACK_BASELINE_FRACTION,
   buildTrackPathD,
 } from '../../utils/trackCurve';
-import { buildTrackDeviations } from '../../utils/trackDeviations';
+import {
+  buildTrackDeviations,
+  findEventLane,
+} from '../../utils/trackDeviations';
 import { getAxisTotalWidth, dateToPixels } from '../../utils/timelineScale';
 import { CATEGORY_COLOR_VARS } from '../../utils/categories';
 import TimelineMarker from '../TimelineMarker/TimelineMarker';
@@ -14,6 +17,7 @@ import styles from './TimelineTracks.module.css';
 export default function TimelineTracks({
   containerRef,
   eventsByTrack,
+  axisEndYear,
   pixelsPerYear,
   activeEventId,
   onMarkerActivate,
@@ -35,8 +39,8 @@ export default function TimelineTracks({
   }, []);
 
   const totalWidth = useMemo(
-    () => getAxisTotalWidth(pixelsPerYear),
-    [pixelsPerYear],
+    () => getAxisTotalWidth(axisEndYear, pixelsPerYear),
+    [axisEndYear, pixelsPerYear],
   );
 
   const baselines = useMemo(
@@ -112,7 +116,7 @@ export default function TimelineTracks({
                     0,
                     totalWidth,
                     baselines[trackId],
-                    deviations[trackId],
+                    deviations[trackId]?.primary,
                   )}
                 />
               ))}
@@ -123,11 +127,15 @@ export default function TimelineTracks({
                   .map((event) => {
                     const startX = dateToPixels(event.date, pixelsPerYear);
                     const endX = dateToPixels(event.endDate, pixelsPerYear);
+                    const laneDeviations = findEventLane(
+                      deviations[trackId]?.lanes ?? [],
+                      event.id,
+                    );
                     const d = buildTrackPathD(
                       startX,
                       endX,
                       baselines[trackId],
-                      deviations[trackId],
+                      laneDeviations,
                     );
                     const segmentStyle = {
                       '--segment-color': CATEGORY_COLOR_VARS[event.category],
@@ -157,7 +165,10 @@ export default function TimelineTracks({
                   event={event}
                   pixelsPerYear={pixelsPerYear}
                   baselinePx={baselines[trackId]}
-                  deviations={deviations[trackId]}
+                  deviations={findEventLane(
+                    deviations[trackId]?.lanes ?? [],
+                    event.id,
+                  )}
                   labelPosition={index % 2 === 0 ? 'above' : 'below'}
                   isOpen={activeEventId === event.id}
                   onActivate={onMarkerActivate}
@@ -166,7 +177,7 @@ export default function TimelineTracks({
               )),
             )}
         </div>
-        <TimelineAxis pixelsPerYear={pixelsPerYear} />
+        <TimelineAxis pixelsPerYear={pixelsPerYear} axisEndYear={axisEndYear} />
       </div>
     </div>
   );
