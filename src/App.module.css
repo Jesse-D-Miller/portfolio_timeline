@@ -21,6 +21,11 @@
   font-size: 0.85rem;
 }
 
+.availability {
+  color: var(--color-education);
+  font-weight: 600;
+}
+
 .links {
   display: flex;
   justify-content: center;

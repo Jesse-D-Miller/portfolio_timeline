@@ -9,7 +9,8 @@ function App() {
         <h1>{siteMeta.name}</h1>
         <p className={styles.title}>{siteMeta.title}</p>
         <p className={styles.meta}>
-          {siteMeta.location} · {siteMeta.availability}
+          {siteMeta.location} ·{' '}
+          <span className={styles.availability}>{siteMeta.availability}</span>
         </p>
         <nav className={styles.links} aria-label="Contact links">
           <a href={`mailto:${siteMeta.links.email}`}>Email</a>
