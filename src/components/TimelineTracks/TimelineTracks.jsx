@@ -30,19 +30,24 @@ function computeConnectorExtensions(trackEvents, pixPerYear) {
     .filter((e) => !e.endDate)
     .slice()
     .sort((a, b) => new Date(a.date) - new Date(b.date));
+  const xs = points.map((p) => dateToPixels(p.date, pixPerYear));
   const extensions = new Map();
   for (let i = 0; i < points.length; i++) {
-    const x = dateToPixels(points[i].date, pixPerYear);
-    let followingClose = 0;
+    // Walk forward through *consecutive adjacent pairs* within LABEL_CROWD_PX.
+    // This gives transitive reach: if A→B and B→C are both close, A's reach
+    // includes C even when A→C exceeds the threshold directly. Stops as soon
+    // as one adjacent gap is too large, preventing unrelated distant events
+    // from being pulled into the cluster.
+    let reach = 0;
     for (let j = i + 1; j < points.length; j++) {
-      if (dateToPixels(points[j].date, pixPerYear) - x <= LABEL_CROWD_PX) {
-        followingClose++;
+      if (xs[j] - xs[j - 1] <= LABEL_CROWD_PX) {
+        reach++;
       } else {
         break;
       }
     }
-    if (followingClose > 0) {
-      extensions.set(points[i].id, followingClose * LABEL_STAGGER_STEP_PX);
+    if (reach > 0) {
+      extensions.set(points[i].id, reach * LABEL_STAGGER_STEP_PX);
     }
   }
   return extensions;
