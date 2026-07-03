@@ -340,8 +340,33 @@ export function buildTrackDeviations(
     const primaryChainDeviations = groupIntoChains(eventLanes[0] ?? []).map(
       (chain) => buildTrunkChainDeviation(chain, direction, pixelsPerYear),
     );
+
+    // Intro deviation: the track enters from completely off-screen at a
+    // 45° diagonal arriving exactly at the first event's start date. With
+    // peakOffsetPx = INTRO_RAMP and span = INTRO_RAMP, the exit-ramp
+    // formula gives offset(x) = firstEventX − x at every x, so dx === dy
+    // (true 45°) regardless of viewport size. The SVG clips the
+    // off-screen portion, producing a clean "track arriving" diagonal.
+    const INTRO_RAMP = 10000;
+    const firstEventX = sortedEvents[0]
+      ? dateToPixels(sortedEvents[0].date, pixelsPerYear)
+      : null;
+    const introDeviations =
+      firstEventX !== null
+        ? [
+            {
+              footprintStart: firstEventX - INTRO_RAMP,
+              peakStart: firstEventX - INTRO_RAMP,
+              peakEnd: firstEventX - INTRO_RAMP,
+              footprintEnd: firstEventX,
+              peakOffsetPx: direction * INTRO_RAMP,
+              eventId: `${trackId}-intro`,
+            },
+          ]
+        : [];
+
     const primary = resolveOverlaps(
-      [...pointDeviations, ...primaryChainDeviations].sort(
+      [...introDeviations, ...pointDeviations, ...primaryChainDeviations].sort(
         (a, b) => a.footprintStart - b.footprintStart,
       ),
     );
