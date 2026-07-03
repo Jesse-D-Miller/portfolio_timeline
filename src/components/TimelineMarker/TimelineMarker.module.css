@@ -104,10 +104,10 @@
    — this offset must stay in sync with that geometry). */
 .markerWrapper:not([data-ranged='true']) .label {
   left: calc(50% + 8px);
-  top: calc(100% + 18px);
+  top: calc(100% + 18px + var(--connector-extension, 0px));
 }
 
 .markerWrapper:not([data-ranged='true'])[data-label-position='above'] .label {
   top: auto;
-  bottom: calc(100% + 18px);
+  bottom: calc(100% + 18px + var(--connector-extension, 0px));
 }

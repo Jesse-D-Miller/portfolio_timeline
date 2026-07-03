@@ -87,16 +87,25 @@ export function buildTrackPathD(rangeStart, rangeEnd, baselinePx, deviations) {
   const interiorPoints = [];
 
   for (const d of deviations) {
-    const peakY = baselinePx + d.peakOffsetPx;
-    const entryY = baselinePx + (d.entryOffsetPx ?? 0);
-    const exitY = baselinePx + (d.exitOffsetPx ?? 0);
-    const vertices = [
-      [d.footprintStart, entryY],
-      [d.peakStart, peakY],
-      [d.peakEnd, peakY],
-      [d.footprintEnd, exitY],
-    ];
-    for (const vertex of vertices) {
+    // Merged achievement/project clusters may carry pathVertices — an
+    // explicit list of [x, yOffset] pairs encoding a multi-level shape
+    // (e.g. dip to one event's depth, 45° descent to the next level, then
+    // flat). Use those directly instead of the standard 4-vertex formula.
+    let verts;
+    if (d.pathVertices) {
+      verts = d.pathVertices.map(([x, yOffset]) => [x, baselinePx + yOffset]);
+    } else {
+      const peakY = baselinePx + d.peakOffsetPx;
+      const entryY = baselinePx + (d.entryOffsetPx ?? 0);
+      const exitY = baselinePx + (d.exitOffsetPx ?? 0);
+      verts = [
+        [d.footprintStart, entryY],
+        [d.peakStart, peakY],
+        [d.peakEnd, peakY],
+        [d.footprintEnd, exitY],
+      ];
+    }
+    for (const vertex of verts) {
       if (vertex[0] > rangeStart && vertex[0] < rangeEnd) {
         interiorPoints.push(vertex);
       }

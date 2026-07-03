@@ -37,10 +37,10 @@ const CONNECTOR_KINK_PX = 8;
 const CONNECTOR_STRAIGHT_PX = 10;
 const DOT_RADIUS_PX = 9.5;
 
-function buildConnectorPath(labelPosition) {
+function buildConnectorPath(labelPosition, extraPx = 0) {
   const direction = labelPosition === 'above' ? -1 : 1;
   const edge = CONNECTOR_CENTER_PX + direction * DOT_RADIUS_PX;
-  const straightEnd = edge + direction * CONNECTOR_STRAIGHT_PX;
+  const straightEnd = edge + direction * (CONNECTOR_STRAIGHT_PX + extraPx);
   const kinkEnd = straightEnd + direction * CONNECTOR_KINK_PX;
   const kinkX = CONNECTOR_CENTER_PX + CONNECTOR_KINK_PX;
   return `M${CONNECTOR_CENTER_PX},${edge} L${CONNECTOR_CENTER_PX},${straightEnd} L${kinkX},${kinkEnd}`;
@@ -52,6 +52,7 @@ export default function TimelineMarker({
   baselinePx,
   deviations,
   labelPosition,
+  connectorExtension = 0,
   isOpen,
   onActivate,
   registerRef,
@@ -63,6 +64,7 @@ export default function TimelineMarker({
   const wrapperStyle = {
     left: startPx,
     '--marker-color': CATEGORY_COLOR_VARS[event.category],
+    '--connector-extension': `${connectorExtension}px`,
   };
 
   // Ranged labels sit left-aligned against the bar's own flat (plateau)
@@ -102,14 +104,17 @@ export default function TimelineMarker({
 
   // Point markers: the label sits on whichever side the marker actually
   // deviated toward — a bump up puts the label above, a dip down puts it
-  // below — rather than a fixed alternating pattern.
+  // below — rather than a fixed alternating pattern. An explicit
+  // labelPositionHint on the event overrides this (e.g. to prevent a
+  // label from overlapping a nearby bar label from a different track).
   const offsetFromBaseline = startY - baselinePx;
   const resolvedLabelPosition =
-    offsetFromBaseline > 0
+    event.labelPositionHint ??
+    (offsetFromBaseline > 0
       ? 'below'
       : offsetFromBaseline < 0
         ? 'above'
-        : labelPosition;
+        : labelPosition);
 
   return (
     <div
@@ -133,7 +138,9 @@ export default function TimelineMarker({
           viewBox={`0 0 ${CONNECTOR_BOX_PX} ${CONNECTOR_BOX_PX}`}
           aria-hidden="true"
         >
-          <path d={buildConnectorPath(resolvedLabelPosition)} />
+          <path
+            d={buildConnectorPath(resolvedLabelPosition, connectorExtension)}
+          />
         </svg>
       )}
       <span

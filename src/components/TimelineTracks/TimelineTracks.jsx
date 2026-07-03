@@ -8,11 +8,45 @@ import {
   buildTrackDeviations,
   findEventLane,
 } from '../../utils/trackDeviations';
-import { getAxisTotalWidth, dateToPixels } from '../../utils/timelineScale';
+import {
+  getAxisTotalWidth,
+  dateToPixels,
+  PIXELS_PER_YEAR,
+} from '../../utils/timelineScale';
 import { CATEGORY_COLOR_VARS } from '../../utils/categories';
 import TimelineMarker from '../TimelineMarker/TimelineMarker';
 import TimelineAxis from '../TimelineAxis/TimelineAxis';
 import styles from './TimelineTracks.module.css';
+
+// Point events within this x-distance of one another get progressively
+// longer connector lines so their labels stagger vertically. The EARLIEST
+// event in a cluster gets the LONGEST connector (label furthest from dot),
+// so later connectors run above it and can't pass through its text.
+const LABEL_CROWD_PX = PIXELS_PER_YEAR * 0.6; // ~7 months
+const LABEL_STAGGER_STEP_PX = 32;
+
+function computeConnectorExtensions(trackEvents, pixPerYear) {
+  const points = trackEvents
+    .filter((e) => !e.endDate)
+    .slice()
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
+  const extensions = new Map();
+  for (let i = 0; i < points.length; i++) {
+    const x = dateToPixels(points[i].date, pixPerYear);
+    let followingClose = 0;
+    for (let j = i + 1; j < points.length; j++) {
+      if (dateToPixels(points[j].date, pixPerYear) - x <= LABEL_CROWD_PX) {
+        followingClose++;
+      } else {
+        break;
+      }
+    }
+    if (followingClose > 0) {
+      extensions.set(points[i].id, followingClose * LABEL_STAGGER_STEP_PX);
+    }
+  }
+  return extensions;
+}
 
 export default function TimelineTracks({
   containerRef,
@@ -158,8 +192,12 @@ export default function TimelineTracks({
               )}
           </svg>
           {groupHeight > 0 &&
-            TRACK_IDS.map((trackId) =>
-              (eventsByTrack[trackId] ?? []).map((event, index) => (
+            TRACK_IDS.map((trackId) => {
+              const extensions = computeConnectorExtensions(
+                eventsByTrack[trackId] ?? [],
+                pixelsPerYear,
+              );
+              return (eventsByTrack[trackId] ?? []).map((event, index) => (
                 <TimelineMarker
                   key={event.id}
                   event={event}
@@ -170,12 +208,13 @@ export default function TimelineTracks({
                     event.id,
                   )}
                   labelPosition={index % 2 === 0 ? 'above' : 'below'}
+                  connectorExtension={extensions.get(event.id) ?? 0}
                   isOpen={activeEventId === event.id}
                   onActivate={onMarkerActivate}
                   registerRef={registerMarkerRef}
                 />
-              )),
-            )}
+              ));
+            })}
         </div>
         <TimelineAxis pixelsPerYear={pixelsPerYear} axisEndYear={axisEndYear} />
       </div>

@@ -48,6 +48,34 @@ const timelineEvents = [
     category: 'education',
   },
   {
+    id: 'pta-award',
+    date: '2013-05',
+    title: 'PTA Award',
+    description:
+      'Awarded for outstanding leadership, athletics, and academics.',
+    category: 'achievement',
+    trackAffiliation: 'education',
+  },
+  {
+    id: 'governors-general-medal',
+    date: '2013-06',
+    title: "Governor General's Academic Medal",
+    description:
+      "Awarded the Governor General's Academic Medal for highest academic standing in the graduating class.",
+    category: 'achievement',
+    trackAffiliation: 'education',
+  },
+  {
+    id: 'capilano-entrance-scholarship',
+    date: '2013-09',
+    title: 'Capilano University Entrance Scholarship',
+    description:
+      'Awarded an entrance scholarship upon admission to Capilano University.',
+    category: 'achievement',
+    trackAffiliation: 'education',
+    labelPositionHint: 'above',
+  },
+  {
     id: 'capilano-university',
     date: '2013-09',
     endDate: '2014-12',
@@ -153,6 +181,15 @@ const timelineEvents = [
     description:
       'Completed an intensive 12-week full-stack program focused on modern web development. Built multiple full-stack applications using React, Node.js, Express, and PostgreSQL. Developed RESTful APIs, dynamic front-end interfaces, and database-driven features. Applied testing practices including unit, integration, and end-to-end testing (Mocha, Chai, Cypress). Worked with Git-based workflows for version control and collaborative development. Emphasized responsive design, clean code practices, and maintainable architecture.',
     category: 'education',
+  },
+  {
+    id: 'supernatural-landscapes',
+    date: '2026-05',
+    endDate: '2026-11',
+    title: 'Super Natural Landscapes — Landscaper',
+    description:
+      'Performed landscape maintenance including weeding, planting, trimming, mowing, and tree felling across residential and commercial properties. Applied a strong working knowledge of plant species and their specific care requirements to ensure healthy, well-maintained outdoor environments.',
+    category: 'career',
   },
   {
     id: 'bcit-ecet-diploma',

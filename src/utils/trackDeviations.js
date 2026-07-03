@@ -142,6 +142,95 @@ function resolveOverlaps(deviations) {
   return deviations;
 }
 
+/**
+ * For achievement/project tracks: merges consecutive deviations that
+ * overlap AND point in the same direction into one continuous sustained
+ * span, so the line never dips back to baseline between them. Tightly
+ * clustered awards touching the same trunk track stay elevated across
+ * the whole cluster rather than yo-yoing up-baseline-up for each one.
+ * After merging, any remaining opposite-direction overlaps are handled
+ * by the regular resolveOverlaps clipping.
+ *
+ * The merged deviation keeps the deepest (most extreme) peak, spans
+ * from the first footprintStart to the last footprintEnd with a plateau
+ * across the whole middle, and carries a joined eventId so every
+ * constituent event can still look itself up via split('+').
+ * @param {Array} deviations - sorted by footprintStart
+ */
+function mergeSameDirectionOverlaps(deviations) {
+  let merged = deviations.slice();
+  let changed = true;
+  while (changed) {
+    changed = false;
+    const next = [];
+    let i = 0;
+    while (i < merged.length) {
+      const a = merged[i];
+      const b = merged[i + 1];
+      if (
+        b &&
+        a.footprintEnd > b.footprintStart &&
+        Math.sign(a.peakOffsetPx) === Math.sign(b.peakOffsetPx)
+      ) {
+        // Shallowest peak is used for the merged plateau. When A is deeper
+        // than B, instead of a single flat plateau that skips A's dot,
+        // pathVertices encodes the exact multi-segment shape: approach to
+        // A's depth, 45° descent to B's level (descentDelta horizontal px
+        // = peakDelta vertical px, so dx === dy → valid octolinear), then
+        // flat through B. This lets buildTrackPathD thread the achievement
+        // line through every constituent dot. If A already has pathVertices
+        // from a prior merge, just extend the flat and update the exit ramp.
+        const shallowerPeak =
+          Math.abs(a.peakOffsetPx) <= Math.abs(b.peakOffsetPx)
+            ? a.peakOffsetPx
+            : b.peakOffsetPx;
+        const descentDelta = Math.abs(a.peakOffsetPx - b.peakOffsetPx);
+        const aCenterX = (a.peakStart + a.peakEnd) / 2;
+
+        let pathVertices;
+        if (descentDelta > 0 && !a.pathVertices) {
+          pathVertices = [
+            [a.footprintStart, 0],
+            [a.peakStart, a.peakOffsetPx],
+            [aCenterX + descentDelta, shallowerPeak],
+            [b.peakEnd, shallowerPeak],
+            [b.footprintEnd, 0],
+          ];
+        } else if (a.pathVertices) {
+          pathVertices = [
+            ...a.pathVertices.slice(0, -1),
+            [b.peakEnd, shallowerPeak],
+            [b.footprintEnd, 0],
+          ];
+        }
+
+        next.push({
+          footprintStart: a.footprintStart,
+          peakStart: a.peakStart,
+          peakEnd: b.peakEnd,
+          footprintEnd: b.footprintEnd,
+          peakOffsetPx: shallowerPeak,
+          ...(pathVertices ? { pathVertices } : {}),
+          perEventDeviation: {
+            ...a.perEventDeviation,
+            ...b.perEventDeviation,
+          },
+          eventId: [
+            ...new Set([...a.eventId.split('+'), ...b.eventId.split('+')]),
+          ].join('+'),
+        });
+        i += 2;
+        changed = true;
+      } else {
+        next.push(a);
+        i++;
+      }
+    }
+    merged = next;
+  }
+  return resolveOverlaps(merged);
+}
+
 // Career/Education's own ranged events: ramp up/down right at the start
 // and end of the chain, scaled by the chain's total duration, capped at
 // TRUNK_RANGED_MAX_AMPLITUDE_PX — this is "the" line (lane 0).
@@ -296,10 +385,17 @@ export function buildTrackDeviations(
       trunkDeviations?.[targetTrack]?.primary ?? [],
     );
     const peakOffsetPx = targetY - baselinesPx[trackId];
-    return tentDeviation(centerX, peakOffsetPx, TOUCH_PLATEAU_PX, event.id);
+    const dev = tentDeviation(
+      centerX,
+      peakOffsetPx,
+      TOUCH_PLATEAU_PX,
+      event.id,
+    );
+    dev.perEventDeviation = { [event.id]: dev };
+    return dev;
   });
 
-  const resolved = resolveOverlaps(deviations);
+  const resolved = mergeSameDirectionOverlaps(deviations);
   return { primary: resolved, lanes: [resolved] };
 }
 
@@ -315,7 +411,17 @@ export function buildTrackDeviations(
  */
 export function findEventLane(lanes, eventId) {
   for (const lane of lanes) {
-    if (lane.some((d) => d.eventId.split('+').includes(eventId))) {
+    const d = lane.find((dev) => dev.eventId.split('+').includes(eventId));
+    if (d) {
+      // For merged achievement/project clusters, each constituent event has
+      // its own original tentDeviation stored here with the exact peakOffsetPx
+      // that targets the right y on that event's specific date — independent
+      // of the merged deviation's single flat plateau. This lets each dot sit
+      // exactly on the target track even when the cluster's path uses an
+      // approximate shared peak.
+      if (d.perEventDeviation?.[eventId]) {
+        return [d.perEventDeviation[eventId]];
+      }
       return lane;
     }
   }
