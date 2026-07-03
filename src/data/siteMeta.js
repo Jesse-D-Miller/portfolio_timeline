@@ -1,8 +1,8 @@
 export const siteMeta = {
   name: 'Jesse Miller',
-  title: 'Junior Full-Stack Developer | JavaScript, React, Node.js',
+  title: 'Student | BCIT | Electrical and Computer Engineering Technology',
   location: 'Greater Vancouver Area',
-  availability: 'Open to full-time',
+  availability: 'Open to Co-op Placement',
   links: {
     email: 'jessedonaldmiller@gmail.com',
     github: 'https://github.com/Jesse-D-Miller',
