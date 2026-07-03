@@ -106,9 +106,18 @@ export function buildTrackPathD(rangeStart, rangeEnd, baselinePx, deviations) {
       ];
     }
     for (const vertex of verts) {
-      if (vertex[0] > rangeStart && vertex[0] < rangeEnd) {
-        interiorPoints.push(vertex);
-      }
+      const [vx] = vertex;
+      if (vx <= rangeStart || vx >= rangeEnd) continue;
+      // Skip if an earlier-starting deviation is still active at vx —
+      // getTrackY returns that deviation's value there, so this deviation's
+      // vertex y is wrong for the rendered path at that x.
+      const shadowed = deviations.some(
+        (other) =>
+          other !== d &&
+          other.footprintStart < d.footprintStart &&
+          other.footprintEnd > vx,
+      );
+      if (!shadowed) interiorPoints.push(vertex);
     }
   }
 
