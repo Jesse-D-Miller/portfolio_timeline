@@ -251,6 +251,7 @@ const timelineEvents = [
     category: 'project',
     trackAffiliation: 'independent',
     link: 'https://github.com/Jesse-D-Miller/webDevResume',
+    videoLink: 'https://www.youtube.com/watch?v=L_zxtbRcubA',
   },
   {
     id: 'web-dev-resume-v2',
@@ -261,6 +262,7 @@ const timelineEvents = [
     category: 'project',
     trackAffiliation: 'independent',
     link: 'https://github.com/Jesse-D-Miller/webDevResumeV2',
+    videoLink: 'https://www.youtube.com/watch?v=2ZCcEtCO20I',
   },
   {
     id: 'portfolio-timeline',

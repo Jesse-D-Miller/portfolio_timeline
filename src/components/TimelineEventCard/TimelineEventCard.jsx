@@ -34,15 +34,29 @@ export default function TimelineEventCard({ event, asListItem = true }) {
       </div>
       <h3 className={styles.title}>{event.title}</h3>
       <p className={styles.description}>{event.description}</p>
-      {event.link && (
-        <a
-          className={styles.link}
-          href={event.link}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Read more
-        </a>
+      {(event.link || event.videoLink) && (
+        <div className={styles.links}>
+          {event.link && (
+            <a
+              className={styles.link}
+              href={event.link}
+              target="_blank"
+              rel="noreferrer"
+            >
+              View code
+            </a>
+          )}
+          {event.videoLink && (
+            <a
+              className={`${styles.link} ${styles.videoLink}`}
+              href={event.videoLink}
+              target="_blank"
+              rel="noreferrer"
+            >
+              ▶ Watch demo
+            </a>
+          )}
+        </div>
       )}
     </Tag>
   );

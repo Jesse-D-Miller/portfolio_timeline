@@ -45,12 +45,21 @@
   color: var(--color-text-muted);
 }
 
+.links {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
 .link {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--color-accent);
   text-decoration: none;
-  align-self: flex-start;
+}
+
+.videoLink {
+  color: var(--color-project);
 }
 
 .link:hover,
