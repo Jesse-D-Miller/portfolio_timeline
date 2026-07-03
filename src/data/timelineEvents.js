@@ -32,6 +32,14 @@ import { AXIS_START_YEAR, getAxisEndYear } from '../utils/timelineScale';
 /** @type {TimelineEvent[]} */
 const timelineEvents = [
   {
+    id: 'born',
+    date: '1994-10',
+    title: 'Born',
+    description: 'Jesse Miller is born in October 1994.',
+    category: 'achievement',
+    trackAffiliation: 'independent',
+  },
+  {
     id: 'elementary-school',
     date: '2000-09',
     endDate: '2008-06',
