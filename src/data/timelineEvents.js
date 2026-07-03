@@ -73,6 +73,14 @@ const timelineEvents = [
     trackAffiliation: 'education',
   },
   {
+    id: 'row-to-podium',
+    date: '2014-03',
+    title: 'Row to Podium',
+    description: "Selected for Rowing Canada's national elite talent identification program, which recruits high-performing athletes from any sport background and develops them toward Olympic and Paralympic competition.",
+    category: 'achievement',
+    trackAffiliation: 'independent',
+  },
+  {
     id: 'governors-general-medal',
     date: '2013-06',
     title: "Governor General's Academic Medal",
