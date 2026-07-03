@@ -163,6 +163,14 @@ const timelineEvents = [
     category: 'career',
   },
   {
+    id: 'bcws-above-and-beyond',
+    date: '2024-10',
+    title: 'BC Wildfire — Above & Beyond Award',
+    description: 'Received the Above & Beyond award for exceptional performance during the 2024 wildfire season.',
+    category: 'achievement',
+    trackAffiliation: 'career',
+  },
+  {
     id: 'bcws-operations-conference',
     date: '2024-03',
     title: 'BC Wildfire Operations Conference — Presenter',
